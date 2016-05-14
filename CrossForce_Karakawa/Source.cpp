@@ -1,6 +1,7 @@
 #include "ConsoleHelper.h"
 #include "MediaPlayer.h"
 #include <math.h>
+#include <stdlib.h>
 
 using namespace System;
 using namespace System::Text;
@@ -19,16 +20,19 @@ int main() {
 	int const ESTADO_JOGO_MORREU = 3;
 
 
+
 	int SCORE_NUM = 0;
 	int SCORE_TAM = 0;
 	int SCORE[5] = { 0,0,0,0,0 };
 	int SCORE_POSITION = (telaX - ((6 + fontEspace) * 5)) / 2;
+
 
 	int playerTopX = 75;
 	int playerBotX = 75;
 	int playerVidas = 3;
 	int spriteVidasX = 10;
 	int distanciaPlayers;
+
 	bool playerAtirou = false;
 	int tamanhoTiro;
 	int tiroTopY;
@@ -253,76 +257,77 @@ int main() {
 
 			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-			distanciaPlayers = playerBotX - playerTopX +1;
-			Console::SetCursorPosition(50, 50);
-			Console::Write(distanciaPlayers);
-			Console::SetCursorPosition(50, 51);
-			Console::Write(abs(56 / distanciaPlayers)+1);
-			Console::SetCursorPosition(50, 52);
-			Console::Write(abs(distanciaPlayers / 56)+1);
 			if (playerAtirou) {
-				tiroTopY = 24;
-				tiroBotY = 78;
-				tiroTopX = playerTopX + 4;
-				tiroBotX = playerBotX + 4;
-				int fimTiro = 28;
-				if(fimTiro != 0){
-					distanciaPlayers = playerBotX - playerTopX;
-					for (int j = 0; j < abs(56 / (distanciaPlayers+1)); j++) {
-						
-						for ( int k = 0; k <= abs((1 + distanciaPlayers) / 56); k++){
-							 
-							if (playerTopX < playerBotX) {
-								tiroTopX += k;
-								tiroBotX -= k;
-							}
-							else if (playerTopX > playerBotX) {
-								tiroTopX -= k;
-								tiroBotX += k;
-							}
-							Console::SetCursorPosition(50, 55);
-							Console::Write(tiroTopX);
+				tiroTopY = 28;
+				tiroBotY = 74;
+				tiroTopX = playerTopX + 3;
+				tiroBotX = playerBotX + 5;
+				distanciaPlayers = abs(playerBotX - playerTopX)+1;
+				
+				tamanhoTiro = sqrt(distanciaPlayers*distanciaPlayers + 3136);
+				bool parar = false;
 
-							Console::SetCursorPosition(50, 56);
-							Console::Write(tiroTopY);
+				while (true){
 
-							Console::SetCursorPosition(50, 57);
-							Console::Write(abs(distanciaPlayers / 56) + 1);
-							ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::Magenta, "л");
-							ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::Magenta, "л");
-						} 
-						tiroTopY++;
-						tiroBotY--;
+					if (tiroTopY == tiroBotY) {
+						break;
 					}
-					fimTiro--;
-				}
-			}
-				/*distanciaPlayers = playerBotX - playerTopX;
-				tamanhoTiro = (sqrt((distanciaPlayers*distanciaPlayers) + 3136)) / 56;
-				tiroTopX = playerTopX + 4;
-				tiroBotX = playerBotX + 4;
-				tiroTopY = 24;
-				tiroBotY = 78;
-				if(playerAtirou){
-				while (tiroTopY != tiroBotY) {
-						for (int i = 0; i <= tamanhoTiro; i++) {
-							if (playerTopX < playerBotX) {
-								tiroTopX += i;
-								tiroBotX -= i;
-							}
-							else if (playerTopX > playerBotX) {
-								tiroTopX -= i;
-								tiroBotX += i;
-							}
-							ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::Magenta, "л");
-							ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::Magenta, "л");
+		//+++++++++++++++++++ LINHAS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+					tiroTopY++;
+					tiroBotY--;
+					for (int j = 0; j < tamanhoTiro / 20; j++) {
 
+						if (tiroTopY == tiroBotY) {
+							break;
 						}
+
+						if (playerTopX > playerBotX) {
+							tiroTopX--;
+							tiroBotX++;
+						}
+						else if (playerTopX < playerBotX) {
+							tiroTopX++;
+							tiroBotX--;
+						}
+
+						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::Magenta, "л");
+						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::Magenta, "л");
+					}
+
+					
+		//++++++++++++++++++ COLUNAS +++++++++++++++++++++++++++++++++++++++
+
+					if (playerTopX > playerBotX) {
+						tiroTopX--;
+						tiroBotX++;
+					}
+					else if (playerTopX < playerBotX) {
+						tiroTopX++;
+						tiroBotX--;
+					}
+
+
+					for (int i = -1; i < ceil(tamanhoTiro / (distanciaPlayers)); i++) {
 						tiroTopY++;
 						tiroBotY--;
+
+						if (tiroTopY == tiroBotY) {
+							break;
+						}
+
+						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::Yellow, "л");
+						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::Yellow, "л");
+
+					}
+
 				}
-			}*/
+
+			}
+			
+			
 			playerAtirou = false;
+			
+			
 			//+++++++++++++++++++++++++ LINHA CIMA HUD ++++++++++++++++++++++++++++++++++++++++++++++
 			ConsoleHelper::ImprimirASCIIExtended(0, 85, ConsoleColor::Black, ConsoleColor::DarkGreen, "ллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл");
 
