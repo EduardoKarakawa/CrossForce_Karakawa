@@ -10,7 +10,7 @@ using namespace Threading;
 
 int  fps = 60;
 
-//teste
+
 void ImprimirNaveEm(int x, int y, bool animar) {
 	if (animar) {
 		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue,     "  ßÛÛß  ");
