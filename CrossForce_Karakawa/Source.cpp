@@ -186,7 +186,14 @@ int randInimigoY() {
 	return 34 + rand() % 40;
 }
 
-
+int InimigoAtingido(int inimigo[8], int x, int y){
+	if ((inimigo[0] >= x) && (inimigo[0]+7 <= x)) {
+		if ((inimigo[3] >= y) && (inimigo[3] + 4 <= y)) {
+			return 0;
+		}
+	}
+	return 1;
+}
 
 
 int main() {
@@ -195,7 +202,7 @@ int main() {
 
 
 	int const telaX = 159;
-	int const telaY = 105;
+	int const telaY = 104;
 	int const fontEspace = 2;
 
 
@@ -230,6 +237,7 @@ int main() {
 
 
 	int inimigosNaTela = 0;
+	//                  X atual | X Proximo | Y atual | Y Proximo | Vivo? | Tiro X | Tiro Y | Atirou? 
 	int inimigo01[] = { randInimigoX(), randInimigoX(), randInimigoY(), randInimigoY(), 0, 1, 2, 0};
 	int inimigo02[] = { randInimigoX(), randInimigoX(), randInimigoY(), randInimigoY(), 1, 1, 2, 0};
 	int inimigo03[] = { randInimigoX(), randInimigoX(), randInimigoY(), randInimigoY(), 1, 1, 2, 0};
@@ -469,6 +477,7 @@ int main() {
 							tiroBotX--;
 						}
 
+						
 						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
 						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
 					}
