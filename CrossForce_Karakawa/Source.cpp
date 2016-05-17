@@ -1,4 +1,4 @@
-#include "ConsoleHelper.h"
+﻿#include "ConsoleHelper.h"
 #include "MediaPlayer.h"
 #include <math.h>
 #include <stdlib.h>
