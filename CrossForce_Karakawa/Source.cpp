@@ -2,13 +2,197 @@
 #include "MediaPlayer.h"
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 using namespace System;
 using namespace System::Text;
 using namespace Threading;
 
+int  fps = 60;
+
+void ImprimirNaveEm(int x, int y, bool animar) {
+	if (animar) {
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue,     "  √ü√õ√õ√ü  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::Blue,     "√ú √õ√õ√õ√õ  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 2, ConsoleColor::Black, ConsoleColor::Yellow,   "√õ√ü√õ  √õ√ú√õ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 3, ConsoleColor::Black, ConsoleColor::Blue,     "  √õ√õ√õ√õ√ø√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 4, ConsoleColor::Black, ConsoleColor::DarkBlue, "  √ú√õ√õ√ú  ");
+	}
+	else {
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue,     "  √ü√õ√õ√ü  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::Blue,     "  √õ√õ√õ√õ √ú");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 2, ConsoleColor::Black, ConsoleColor::Yellow,   "√õ√ú√õ  √õ√ü√õ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 3, ConsoleColor::Black, ConsoleColor::Blue,     "√ü√ø√õ√õ√õ√õ  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 4, ConsoleColor::Black, ConsoleColor::DarkBlue, "  √ú√õ√õ√ú  ");
+	}
+}
+
+
+void ImprimirInimigo01(int x, int y, bool animar){
+	if (animar) {
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue, "  √ú");
+		ConsoleHelper::ImprimirASCIIExtended(x + 3, y, ConsoleColor::DarkBlue, ConsoleColor::Blue, "√ü√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x + 5, y, ConsoleColor::Black, ConsoleColor::DarkBlue, "√ú  ");
+
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta, "√ú√ú√ú√ú√ú");
+		ConsoleHelper::ImprimirASCIIExtended(x + 5, y + 1, ConsoleColor::DarkMagenta, ConsoleColor::White, "√ü√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x + 7, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta, "√ú");
+
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 2, ConsoleColor::Black, ConsoleColor::White, "√õ√õ√õ√õ    ");
+
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 3, ConsoleColor::Black, ConsoleColor::DarkMagenta, " √ü√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x + 3, y + 3, ConsoleColor::DarkMagenta, ConsoleColor::Blue, "√ú√ú");
+		ConsoleHelper::ImprimirASCIIExtended(x + 5, y + 3, ConsoleColor::Black, ConsoleColor::DarkMagenta, "√ü√ü ");
+	}
+	else {
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue,		"  √ú");
+		ConsoleHelper::ImprimirASCIIExtended(x+3, y, ConsoleColor::DarkBlue, ConsoleColor::Blue,	   "√ü√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x+5, y, ConsoleColor::Black, ConsoleColor::DarkBlue,		 "√ú  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta,  "√ú");
+		ConsoleHelper::ImprimirASCIIExtended(x+1, y + 1, ConsoleColor::DarkMagenta, ConsoleColor::White, "√ü√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x+3, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta,   "√ú√ú√ú√ú√ú");
+		
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 2, ConsoleColor::Black, ConsoleColor::White,	"    √õ√õ√õ√õ");
+
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 3, ConsoleColor::Black, ConsoleColor::DarkMagenta, " √ü√ü");
+		ConsoleHelper::ImprimirASCIIExtended(x+3, y + 3, ConsoleColor::DarkMagenta, ConsoleColor::Blue,	  "√ú√ú");
+		ConsoleHelper::ImprimirASCIIExtended(x+5, y + 3, ConsoleColor::Black, ConsoleColor::DarkMagenta,   "√ü√ü ");
+	}
+
+}
+
+
+void ImprimirTiroInimigo(int x, int y) {
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::White,     "√õ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::White, "√õ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 2, ConsoleColor::Black, ConsoleColor::White, "√õ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y + 3, ConsoleColor::Black, ConsoleColor::White, "√õ");
+}
+
+void MoverInimigo(int inimigo[8], bool anim) {
+	if (fps % 2 == 0) {
+		if (inimigo[0] > inimigo[1]) {
+			inimigo[0]--;
+		}
+		else if (inimigo[0] < inimigo[1]) {
+			inimigo[0]++;
+		}
+
+		if (inimigo[2] > inimigo[3]) {
+			inimigo[2]--;
+		}
+		else if (inimigo[2] < inimigo[3]) {
+			inimigo[2]++;
+		}
+	}
+	ImprimirInimigo01(inimigo[0], inimigo[2], anim);
+}
+
+
+void ImprimirScore(int n, int x, int y) {
+	switch (n)
+	{
+		case 0:
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     " √ú√ú√ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, " √ü√ü√ü√ü ");
+			break;
+		case 1:
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     "  √ú√ú  ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√ú√õ√õ√õ  ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "  √õ√õ  ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "  √õ√õ  ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, "√ü√ü√ü√ü√ü√ü");
+			break;
+		case 2:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     " √ú√ú√ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√ü   √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, " √ú√ú√ú√õ√ü");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√õ√õ    ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, "√ü√ü√ü√ü√ü√ü");
+			break;
+		case 3:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     " √ú√ú√ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√ü   √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "   √õ√õ ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√ú   √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, " √ü√ü√ü√ü ");
+			break;
+		case 4:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     "   √ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, " √ú√ü√õ√õ ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "√õ√ú√ú√õ√õ√ú");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "   √õ√õ ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, "   √ü√ü ");
+			break;
+		case 5:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     "√ú√ú√ú√ú√ú√ú");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√õ√õ    ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "√ü√ü√ü√ü√õ√ú");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√ú   √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, " √ü√ü√ü√ü ");
+			break;
+		case 6:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     " √ú√ú√ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√õ√õ   √ü");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "√õ√õ√ü√ü√õ√ú");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, " √ü√ü√ü√ü ");
+			break;
+		case 7:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     "√ú√ú√ú√ú√ú√ú");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√ü    √õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, "   √ú√ü ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "  √õ√õ  ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, "  √ü√ü  ");
+			break;
+		case 8:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     " √ú√ú√ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, " √õ√õ√õ√õ ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, " √ü√ü√ü√ü ");
+			break;
+		case 9:
+
+			ConsoleHelper::ImprimirASCIIExtended(x, y,     " √ú√ú√ú√ú ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "√õ√õ  √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 2, " √õ√ú√ú√õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 3, "√ú   √õ√õ");
+			ConsoleHelper::ImprimirASCIIExtended(x, y + 4, " √ü√ü√ü√ü ");
+			break;
+	}
+}
+
+
+
+int randInimigoX() {
+	return 20 + rand() % 110;
+}
+
+
+
+int randInimigoY() {
+	return 34 + rand() % 40;
+}
+
+
+
 
 int main() {
+
+	srand(time(NULL));
+
+
 	int const telaX = 159;
 	int const telaY = 105;
 	int const fontEspace = 2;
@@ -21,17 +205,20 @@ int main() {
 
 
 
-	int SCORE_NUM = 0;
 	int SCORE_TAM = 0;
 	int SCORE[5] = { 0,0,0,0,0 };
-	int SCORE_POSITION = (telaX - ((6 + fontEspace) * 5)) / 2;
+	int SCORE_POSITIONX = (telaX - ((6 + fontEspace) * 5)) / 2;
 
 
 	int playerTopX = 75;
+	int playerTopY = 19;
 	int playerBotX = 75;
+	int playerBotY = 79;
 	int playerVidas = 3;
 	int spriteVidasX = 10;
+	int playerKills = 0;
 	int distanciaPlayers;
+
 
 	bool playerAtirou = false;
 	int tamanhoTiro;
@@ -40,14 +227,27 @@ int main() {
 	int tiroBotY;
 	int tiroBotX;
 
+
+	int inimigosNaTela = 0;
+	int inimigo01[] = { randInimigoX(), randInimigoX(), randInimigoY(), randInimigoY(), 0, 1, 2, 0};
+	int inimigo02[] = { randInimigoX(), randInimigoX(), randInimigoY(), randInimigoY(), 1, 1, 2, 0};
+	int inimigo03[] = { randInimigoX(), randInimigoX(), randInimigoY(), randInimigoY(), 1, 1, 2, 0};
+
+
+
+	
+
 	bool animar = true;
-	int  fps = 60;
+	
+
 
 	ConsoleKeyInfo tecla;
 
 
 	Console::SetWindowSize(telaX, telaY);
 	Console::SetBufferSize(telaX, telaY);
+
+
 	for (;;) {
 
 
@@ -60,9 +260,9 @@ int main() {
 
 			fps++;
 
-			//+++++++++++++++++++++++++ PARTE MOVIMENTA«√O ++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ PARTE MOVIMENTA«√O ++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ PARTE MOVIMENTA«√O ++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ PARTE MOVIMENTA√á√ÉO ++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ PARTE MOVIMENTA√á√ÉO ++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ PARTE MOVIMENTA√á√ÉO ++++++++++++++++++++++++++++++++++++++++++++++
 
 
 			if (Console::KeyAvailable) {
@@ -84,120 +284,23 @@ int main() {
 
 
 			//+++++++++++++++++++++++++ SCORE ++++++++++++++++++++++++++++++++++++++++++++++
-			SCORE_POSITION = (telaX - ((6 + fontEspace) * 5)) / 2;
-			for (SCORE_TAM = 0; SCORE_TAM <= 4; SCORE_TAM++) {
-				switch (SCORE_TAM)
-				{
-				case 0:
-					SCORE_NUM = SCORE[0];
-					break;
-				case 1:
-					SCORE_NUM = SCORE[1];
-					break;
-				case 2:
-					SCORE_NUM = SCORE[2];
-					break;
-				case 3:
-					SCORE_NUM = SCORE[3];
-					break;
-				case 4:
-					SCORE_NUM = SCORE[4];
-					break;
-				}
-				switch (SCORE_NUM)
-				{
-				case 0:
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, " ‹‹‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, " ﬂﬂﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 1:
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, "  ‹‹  ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "‹€€€  ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "  €€  ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "  €€  ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, "ﬂﬂﬂﬂﬂﬂ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 2:
+			SCORE_POSITIONX = (telaX - ((6 + fontEspace) * 5)) / 2;
+			
 
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, " ‹‹‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "ﬂ   €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, " ‹‹‹€ﬂ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "€€    ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, "ﬂﬂﬂﬂﬂﬂ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 3:
+			ImprimirScore(SCORE[0], SCORE_POSITIONX, 12);
+			SCORE_POSITIONX += 6 + fontEspace;
 
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, " ‹‹‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "ﬂ   €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "   €€ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "‹   €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, " ﬂﬂﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 4:
+			ImprimirScore(SCORE[1], SCORE_POSITIONX, 12);
+			SCORE_POSITIONX += 6 + fontEspace;
 
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, "   ‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, " ‹ﬂ€€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "€‹‹€€‹");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "   €€ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, "   ﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 5:
+			ImprimirScore(SCORE[2], SCORE_POSITIONX, 12);
+			SCORE_POSITIONX += 6 + fontEspace;
 
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, "‹‹‹‹‹‹");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "€€    ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "ﬂﬂﬂﬂ€‹");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "‹   €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, " ﬂﬂﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 6:
+			ImprimirScore(SCORE[3], SCORE_POSITIONX, 12);
+			SCORE_POSITIONX += 6 + fontEspace;
 
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, " ‹‹‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "€€   ﬂ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "€€ﬂﬂ€‹");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, " ﬂﬂﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 7:
-
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, "‹‹‹‹‹‹");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "ﬂ    €");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, "   ‹ﬂ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "  €€  ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, "  ﬂﬂ  ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 8:
-
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, " ‹‹‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, " €€€€ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, " ﬂﬂﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				case 9:
-
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 12, " ‹‹‹‹ ");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 13, "€€  €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 14, " €‹‹€€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 15, "‹   €€");
-					ConsoleHelper::ImprimirASCIIExtended(SCORE_POSITION, 16, " ﬂﬂﬂﬂ ");
-					SCORE_POSITION += 6 + fontEspace;
-					break;
-				}
-			}
-
-
+			ImprimirScore(SCORE[4], SCORE_POSITIONX, 12);
+			SCORE_POSITIONX += 6 + fontEspace;
 
 
 
@@ -212,56 +315,131 @@ int main() {
 
 
 			//+++++++++++++++++++++++++ LINHA BAIXO SCORE ++++++++++++++++++++++++++++++++++++++++++++++
-			ConsoleHelper::ImprimirASCIIExtended(0, 17, ConsoleColor::Black, ConsoleColor::DarkGreen, "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€");
+			ConsoleHelper::ImprimirASCIIExtended(0, 17, ConsoleColor::Black, ConsoleColor::DarkGreen, "√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ");
 
 
 
 			//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-			if (animar) {
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 19, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 20, ConsoleColor::Black, ConsoleColor::Blue, "‹ €€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 21, ConsoleColor::Black, ConsoleColor::Yellow, "€ﬂ€  €‹€");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 22, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ﬂˇ");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 23, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
-			}
-			else {
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 19, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 20, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ ‹");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 21, ConsoleColor::Black, ConsoleColor::Yellow, "€‹€  €ﬂ€");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 22, ConsoleColor::Black, ConsoleColor::Blue, "ﬂˇ€€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerTopX, 23, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
-			}
+			ImprimirNaveEm(playerTopX, playerTopY, animar);
 
 
 			//+++++++++++++++++++++++++ PLAYER BOT ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ PLAYER BOT ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+			ImprimirNaveEm(playerBotX, playerBotY, animar);
 
-			if (animar) {
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 79, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 80, ConsoleColor::Black, ConsoleColor::Blue, "‹ €€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 81, ConsoleColor::Black, ConsoleColor::Yellow, "€ﬂ€  €‹€");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 82, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ﬂˇ");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 83, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
+
+			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+			if (playerKills < 10) {
+				
+				//Verificando se a variavel tem a posi√ß√£o de um inimigo
+				if (fps % 10 == 0) {
+					if (inimigo01[4] == 1)
+					{
+						inimigo01[1] = randInimigoX();
+						inimigo01[3] = randInimigoY();
+						inimigo01[4] = 0;
+					}
+					else if (inimigo02[4] == 1)
+					{
+						inimigo02[1] = randInimigoX();
+						inimigo02[3] = randInimigoY();
+						inimigo02[4] = 0;
+					}
+					else if (inimigo03[4] == 1)
+					{
+						inimigo03[1] = randInimigoX();
+						inimigo03[3] = randInimigoY();
+						inimigo03[4] = 0;
+					}
+				}
+
+
+				// Movendo inimigo01---------------------------------------------------------------
+				if (inimigo01[4] == 0) {
+					//Verificando a posi√ßao X e Y do inimigo para gerar um ponto de locomo√ß√£o
+					if ((inimigo01[1] == inimigo01[0]) || (inimigo01[3] == inimigo01[2])) {
+						inimigo01[1] = randInimigoX();
+						inimigo01[3] = randInimigoY();
+					}
+
+					else {
+
+						MoverInimigo(inimigo01, animar);
+					}
+					
+					if (fps % 60 == 0) {
+						//Virifica se o inimigo ja atirou, se nao, verifica a posi√ß√£o do inimigo e adiciona informa√ß√µes sobre o tiro
+						if (inimigo01[7] == 0) {
+							inimigo01[5] = inimigo01[0];
+							inimigo01[6] = inimigo01[2];
+							if (inimigo01[1] > 62) {
+								inimigo01[7] = 2;
+							}
+							else if(inimigo01[1] < 62) {
+								inimigo01[7] = 1;
+							}
+						}
+					}
+
+
+					if (fps % 2 == 0) {
+						if (inimigo01[7] != 0) {
+							if (inimigo01[7] == 1) {
+								if (inimigo01[6] < 22) {
+									inimigo01[7] = 0;
+								}
+								else {
+									inimigo01[6]--;
+
+								}
+							}
+							else if (inimigo01[7] == 2) {
+								if (inimigo01[6] > 81) {
+									inimigo01[7] = 0;
+								}
+								else {
+									inimigo01[6]++;
+								}
+							}
+							//Verificando se o tiro pegou no player
+							if ((inimigo01[5] >= playerBotX)&&(inimigo01[5] <= playerBotX + 7)) {
+								if ((inimigo01[6] + 3 >= playerBotY) && (inimigo01[6] + 3 <= playerBotY)) {
+									inimigo01[7] == 0;
+									playerVidas--;
+									
+								}
+							}
+							if ((inimigo01[5] >= playerTopX) && (inimigo01[5] <= playerTopX + 7)) {
+								if ((inimigo01[6] >= playerTopY + 4) && (inimigo01[6] <= playerTopY + 4)) {
+									inimigo01[7] == 0;
+									playerVidas--;
+
+								}
+							}
+							ImprimirTiroInimigo(inimigo01[5], inimigo01[6]);
+						}
+					}
+				}
+
+
+			//-----------------------------------------------------------------------------------
 			}
-			else {
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 79, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 80, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ ‹");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 81, ConsoleColor::Black, ConsoleColor::Yellow, "€‹€  €ﬂ€");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 82, ConsoleColor::Black, ConsoleColor::Blue, "ﬂˇ€€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(playerBotX, 83, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
-			}
 
 
+			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 			if (playerAtirou) {
 				tiroTopY = 28;
 				tiroBotY = 74;
-				tiroTopX = playerTopX + 3;
-				tiroBotX = playerBotX + 5;
+				tiroTopX = playerTopX + 4;
+				tiroBotX = playerBotX + 4;
 				distanciaPlayers = abs(playerBotX - playerTopX)+1;
 				
 				tamanhoTiro = sqrt(distanciaPlayers*distanciaPlayers + 3136);
@@ -290,8 +468,8 @@ int main() {
 							tiroBotX--;
 						}
 
-						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::Magenta, "€");
-						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::Magenta, "€");
+						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "√õ");
+						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "√õ");
 					}
 
 					
@@ -315,8 +493,8 @@ int main() {
 							break;
 						}
 
-						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::Yellow, "€");
-						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::Yellow, "€");
+						ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "√õ");
+						ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "√õ");
 
 					}
 
@@ -329,7 +507,7 @@ int main() {
 			
 			
 			//+++++++++++++++++++++++++ LINHA CIMA HUD ++++++++++++++++++++++++++++++++++++++++++++++
-			ConsoleHelper::ImprimirASCIIExtended(0, 85, ConsoleColor::Black, ConsoleColor::DarkGreen, "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€");
+			ConsoleHelper::ImprimirASCIIExtended(0, 85, ConsoleColor::Black, ConsoleColor::DarkGreen, "√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ√õ");
 
 
 
@@ -340,35 +518,23 @@ int main() {
 			spriteVidasX = 10;
 
 			if (playerVidas >= 1) {
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 90, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 91, ConsoleColor::Black, ConsoleColor::Blue, "‹ €€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 92, ConsoleColor::Black, ConsoleColor::Yellow, "€ﬂ€  €‹€");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 93, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ﬂˇ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 94, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
+				ImprimirNaveEm(spriteVidasX, 90, false);
 				spriteVidasX += 15;
 			}
 			if (playerVidas >= 2) {
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 90, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 91, ConsoleColor::Black, ConsoleColor::Blue, "‹ €€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 92, ConsoleColor::Black, ConsoleColor::Yellow, "€ﬂ€  €‹€");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 93, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ﬂˇ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 94, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
+				ImprimirNaveEm(spriteVidasX, 90, false);
 				spriteVidasX += 15;
 			}
 			if (playerVidas >= 3) {
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 90, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ﬂ€€ﬂ  ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 91, ConsoleColor::Black, ConsoleColor::Blue, "‹ €€€€  ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 92, ConsoleColor::Black, ConsoleColor::Yellow, "€ﬂ€  €‹€");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 93, ConsoleColor::Black, ConsoleColor::Blue, "  €€€€ﬂˇ");
-				ConsoleHelper::ImprimirASCIIExtended(spriteVidasX, 94, ConsoleColor::Black, ConsoleColor::DarkBlue, "  ‹€€‹  ");
+				ImprimirNaveEm(spriteVidasX, 90, false);
 				spriteVidasX += 15;
 			}
 
 
 
 
-			//+++++++++++++++++++++++++ LOGICA ANIMA«√O ++++++++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ LOGICA ANIMA«√O ++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ LOGICA ANIMA√á√ÉO ++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ LOGICA ANIMA√á√ÉO ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			if ((fps % 7) == 0) {
 				if (animar) {
 					animar = false;
@@ -384,12 +550,6 @@ int main() {
 			if (fps == 0) {
 				fps = 60;
 			}
-
-
-
-
-
-
 
 			break;
 
