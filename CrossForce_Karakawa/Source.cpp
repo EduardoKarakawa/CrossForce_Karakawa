@@ -46,26 +46,6 @@ void ImprimirNaveEm(int x, int y, bool animar) {
 }
 
 
-int AtualizaScore(int somar, int score[5]) {
-	int aux;
-	score[3] += somar;
-	if (score[3] > 9) {
-		aux = score[3] % 10;
-		score[2] += (score[3] - aux) / 10;
-		score[3] = aux;
-	}
-	if (score[2] > 9) {
-		aux = score[2] % 10;
-		score[1] += (score[2] - aux) / 10;
-		score[2] = aux;
-	}
-	if (score[1] > 9) {
-		aux = score[1] % 10;
-		score[0] += (score[3] - aux) / 10;
-		score[1] = aux;
-	}
-
-}
 
 void ImprimirInimigo01(int x, int y, bool animar){
 	if (animar) {
@@ -252,7 +232,7 @@ int main() {
 
 
 
-	int SCORE_TAM = 0;
+	int SCORE_SOMAR = 0;
 	int SCORE[5] = { 0,0,0,0,0 };
 	int SCORE_POSITIONX = (telaX - ((6 + fontEspace) * 5)) / 2;
 
@@ -494,14 +474,12 @@ int main() {
 								if ((inimigo01.tiroY + 3 >= playerBotY) && (inimigo01.tiroY + 3 <= playerBotY)) {
 									inimigo01.atirou = false;
 									playerVidas--;
-									AtualizaScore(1, SCORE);
 								}
 							}
 							if ((inimigo01.tiroX >= playerTopX) && (inimigo01.tiroX <= playerTopX + 7)) {
 								if ((inimigo01.tiroY >= playerTopY + 4) && (inimigo01.tiroY <= playerTopY + 4)) {
 									inimigo01.atirou = false;
 									playerVidas--;
-									AtualizaScore(1, SCORE);
 								}
 							}
 							ImprimirTiroInimigo(inimigo01.tiroX, inimigo01.tiroY);
@@ -565,6 +543,11 @@ int main() {
 							//Verificando se atingiu algum inimigo
 							if (InimigoAtindo(tiroTopX, tiroTopY, inimigo01) == true) {
 								inimigo01.vivo = false;
+								SCORE_SOMAR++;
+							}
+							if (InimigoAtindo(tiroBotX, tiroBotY, inimigo01) == true) {
+								inimigo01.vivo = false;
+								SCORE_SOMAR++;
 							}
 						}
 					}
@@ -605,7 +588,28 @@ int main() {
 				}
 
 			}
-			
+			if (SCORE_SOMAR > 0) {
+				int aux;
+				SCORE[3] += SCORE_SOMAR;
+				if (SCORE[3] > 9) {
+					aux = SCORE[3] % 10;
+					SCORE[2] += (SCORE[3] - aux) / 10;
+					SCORE[3] = aux;
+				}
+				if (SCORE[2] > 9) {
+					aux = SCORE[2] % 10;
+					SCORE[1] += (SCORE[2] - aux) / 10;
+					SCORE[2] = aux;
+				}
+				if (SCORE[1] > 9) {
+					aux = SCORE[1] % 10;
+					SCORE[0] += (SCORE[3] - aux) / 10;
+					SCORE[1] = aux;
+				}
+				if (SCORE[0] > 9) {
+					SCORE[0] = 9;
+				}
+			}
 			
 			playerAtirou = false;
 			
