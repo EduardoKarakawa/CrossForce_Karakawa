@@ -28,6 +28,7 @@ bool InimigoAtindo(int tiroX, int tiroY, TipoInimigo inimigo) {
 	return false;
 }
 
+
 void ImprimirNaveEm(int x, int y, bool animar) {
 	if (animar) {
 		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue,     "  ßÛÛß  ");
@@ -87,6 +88,7 @@ void ImprimirTiroInimigo(int x, int y) {
 		ConsoleHelper::ImprimirASCIIExtended(x, y + 2, ConsoleColor::Black, ConsoleColor::White, "Û");
 		ConsoleHelper::ImprimirASCIIExtended(x, y + 3, ConsoleColor::Black, ConsoleColor::White, "Û");
 }
+
 
 TipoInimigo MoverInimigo(TipoInimigo inimigo, bool anim) {
 	if (fps % 2 == 0) {
@@ -194,16 +196,15 @@ void ImprimirScore(int n, int x, int y) {
 }
 
 
-
 int randInimigoX() {
 	return 20 + rand() % 110;
 }
 
 
-
 int randInimigoY() {
 	return 34 + rand() % 40;
 }
+
 
 int InimigoAtingido(int inimigo[8], int x, int y){
 	if ((inimigo[0] >= x) && (inimigo[0]+7 <= x)) {
@@ -214,6 +215,10 @@ int InimigoAtingido(int inimigo[8], int x, int y){
 	return 1;
 }
 
+
+void GameOver() {
+
+}
 
 int main() {
 
@@ -233,7 +238,7 @@ int main() {
 
 
 	int SCORE_SOMAR = 0;
-	int SCORE[5] = { 0,0,0,0,0 };
+	int SCORE[5] = {0,0,0,0,0};
 	int SCORE_POSITIONX = (telaX - ((6 + fontEspace) * 5)) / 2;
 
 
@@ -379,26 +384,136 @@ int main() {
 			ConsoleHelper::ImprimirASCIIExtended(0, 17, ConsoleColor::Black, ConsoleColor::DarkGreen, "ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ");
 
 
+			if (playerVidas > 0) {
+				//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
+				//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-			//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-			ImprimirNaveEm(playerTopX, playerTopY, animar);
+				ImprimirNaveEm(playerTopX, playerTopY, animar);
 
 
-			//+++++++++++++++++++++++++ PLAYER BOT ++++++++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ PLAYER BOT ++++++++++++++++++++++++++++++++++++++++++++++++++++
+				//+++++++++++++++++++++++++ PLAYER BOT ++++++++++++++++++++++++++++++++++++++++++++++++++++
+				//+++++++++++++++++++++++++ PLAYER BOT ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-			ImprimirNaveEm(playerBotX, playerBotY, animar);
+				ImprimirNaveEm(playerBotX, playerBotY, animar);
 
+
+
+				//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
+				//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
+				//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+				if (playerAtirou) {
+					tiroTopY = 28;
+					tiroBotY = 74;
+					tiroTopX = playerTopX + 4;
+					tiroBotX = playerBotX + 4;
+					distanciaPlayers = abs(playerBotX - playerTopX);
+
+					tamanhoTiro = sqrt(distanciaPlayers*distanciaPlayers + 2116);
+					bool parar = false;
+
+					while (true) {
+
+						if (tiroTopY == tiroBotY) {
+							break;
+						}
+						//+++++++++++++++++++ LINHAS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+						tiroTopY++;
+						tiroBotY--;
+						if (distanciaPlayers == 0) {
+							quantidadePixel = 1;
+						}
+						else {
+							quantidadePixel = tamanhoTiro / 26;
+						}
+						if (tiroTopY != tiroBotY) {
+							for (int j = 0; j < quantidadePixel; j++) {
+
+								if (playerTopX > playerBotX) {
+									tiroTopX--;
+									tiroBotX++;
+								}
+								else if (playerTopX < playerBotX) {
+									tiroTopX++;
+									tiroBotX--;
+								}
+
+								if (tiroTopY == tiroBotY) {
+									break;
+								}
+
+								ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
+								ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
+
+
+								//--------------------------Verificando se atingiu algum inimigo----------------------------------------
+								//--------------------------Verificando se atingiu algum inimigo----------------------------------------
+								if ((InimigoAtindo(tiroTopX, tiroTopY, inimigo01) || InimigoAtindo(tiroBotX, tiroBotY, inimigo01)) && inimigo01.vivo) {
+									inimigo01.vivo = false;
+									inimigo01.Xatual = randInimigoX();
+									inimigo01.Yatual = randInimigoY();
+									SCORE_SOMAR++;
+								}
+								if ((InimigoAtindo(tiroTopX, tiroTopY, inimigo02) || InimigoAtindo(tiroBotX, tiroBotY, inimigo02)) && inimigo02.vivo) {
+									inimigo02.vivo = false;
+									inimigo02.Xatual = randInimigoX();
+									inimigo02.Yatual = randInimigoY();
+									SCORE_SOMAR++;
+								}
+								if ((InimigoAtindo(tiroTopX, tiroTopY, inimigo03) || InimigoAtindo(tiroBotX, tiroBotY, inimigo03)) && inimigo03.vivo) {
+									inimigo03.vivo = false;
+									inimigo03.Xatual = randInimigoX();
+									inimigo03.Yatual = randInimigoY();
+									SCORE_SOMAR++;
+								}
+							}
+						}
+
+
+						//++++++++++++++++++ COLUNAS +++++++++++++++++++++++++++++++++++++++
+
+						if (playerTopX > playerBotX) {
+							tiroTopX--;
+							tiroBotX++;
+						}
+						else if (playerTopX < playerBotX) {
+							tiroTopX++;
+							tiroBotX--;
+						}
+
+						if (distanciaPlayers == 0) {
+							quantidadePixel = 1;
+						}
+						else {
+							quantidadePixel = tamanhoTiro / distanciaPlayers;
+						}
+
+						if (tiroTopY != tiroBotY) {
+							for (int i = 0; i < quantidadePixel; i++) {
+								tiroTopY++;
+								tiroBotY--;
+								if (tiroTopY == tiroBotY) {
+									break;
+								}
+
+								ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
+								ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
+
+							}
+						}
+
+					}
+
+				}
+			}
 
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			if (playerKills < 10) {
-				
+
 				//Verificando se a variavel tem a posição de um inimigo
-				if (fps % 10 == 0) {
+				if (fps % 60 == 0) {
 					if (inimigo01.vivo == false)
 					{
 						inimigo01.Xproximo = randInimigoX();
@@ -420,7 +535,9 @@ int main() {
 				}
 
 
-				// Movendo inimigo01---------------------------------------------------------------
+				//----------------- Movendo inimigo01---------------------------------------------------------------
+				//----------------- Movendo inimigo01---------------------------------------------------------------
+
 				if (inimigo01.vivo == true) {
 					//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
 					if ((inimigo01.Xatual == inimigo01.Xproximo) || (inimigo01.Yatual == inimigo01.Yproximo)) {
@@ -433,7 +550,7 @@ int main() {
 						inimigo01 = MoverInimigo(inimigo01, animar);
 
 					}
-					
+
 					if (fps % 60 == 0) {
 						//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
 						if (inimigo01.atirou == false) {
@@ -442,7 +559,7 @@ int main() {
 							if (inimigo01.Xproximo > 62) {
 								inimigo01.direcaoTiro = 0;
 							}
-							else if(inimigo01.atirou < 62) {
+							else if (inimigo01.atirou < 62) {
 								inimigo01.direcaoTiro = 1;
 							}
 							inimigo01.atirou = true;
@@ -451,7 +568,7 @@ int main() {
 
 
 					if (fps % 2 == 0) {
-						if (inimigo01.atirou == true ) {
+						if (inimigo01.atirou == true) {
 							if (inimigo01.direcaoTiro == 0) {
 								if (inimigo01.tiroY < 22) {
 									inimigo01.atirou = false;
@@ -470,7 +587,7 @@ int main() {
 								}
 							}
 							//Verificando se o tiro pegou no player
-							if ((inimigo01.tiroX >= playerBotX)&&(inimigo01.tiroX <= playerBotX + 7)) {
+							if (((inimigo01.tiroX >= playerBotX) && (inimigo01.tiroX <= playerBotX + 7))) {
 								if ((inimigo01.tiroY + 3 >= playerBotY) && (inimigo01.tiroY + 3 <= playerBotY)) {
 									inimigo01.atirou = false;
 									playerVidas--;
@@ -488,106 +605,151 @@ int main() {
 				}
 
 
-			//-----------------------------------------------------------------------------------
-			}
 
+				//----------------- Movendo inimigo02---------------------------------------------------------------
+				//----------------- Movendo inimigo02---------------------------------------------------------------
 
-			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ TIRO ++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-			if (playerAtirou) {
-				tiroTopY = 28;
-				tiroBotY = 74;
-				tiroTopX = playerTopX + 4;
-				tiroBotX = playerBotX + 4;
-				distanciaPlayers = abs(playerBotX - playerTopX);
-				
-				tamanhoTiro = sqrt(distanciaPlayers*distanciaPlayers + 2116);
-				bool parar = false;
-
-				while (true){
-
-					if (tiroTopY == tiroBotY) {
-						break;
+				if (inimigo02.vivo == true) {
+					//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
+					if ((inimigo02.Xatual == inimigo02.Xproximo) || (inimigo02.Yatual == inimigo02.Yproximo)) {
+						inimigo02.Xproximo = randInimigoX();
+						inimigo02.Yproximo = randInimigoY();
 					}
-		//+++++++++++++++++++ LINHAS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-					tiroTopY++;
-					tiroBotY--;
-					if (distanciaPlayers == 0) {
-						quantidadePixel = 1;
-					}
+
 					else {
-						quantidadePixel = tamanhoTiro / 26;
- 	 	 	 	 	}
-					if (tiroTopY != tiroBotY) {
-						for (int j = 0; j < quantidadePixel; j++) {
 
-							if (playerTopX > playerBotX) {
-								tiroTopX--;
-								tiroBotX++;
-							}
-							else if (playerTopX < playerBotX) {
-								tiroTopX++;
-								tiroBotX--;
-							}
+						inimigo02 = MoverInimigo(inimigo02, animar);
 
-							if (tiroTopY == tiroBotY) {
-								break;
-							}
+					}
 
-							ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
-							ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
-
-
-							//Verificando se atingiu algum inimigo
-							if (InimigoAtindo(tiroTopX, tiroTopY, inimigo01) == true) {
-								inimigo01.vivo = false;
-								SCORE_SOMAR++;
+					if (fps % 60 == 0) {
+						//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
+						if (inimigo02.atirou == false) {
+							inimigo02.tiroX = inimigo02.Xatual;
+							inimigo02.tiroY = inimigo02.Yatual;
+							if (inimigo02.Xproximo > 62) {
+								inimigo02.direcaoTiro = 0;
 							}
-							if (InimigoAtindo(tiroBotX, tiroBotY, inimigo01) == true) {
-								inimigo01.vivo = false;
-								SCORE_SOMAR++;
+							else if (inimigo02.atirou < 62) {
+								inimigo02.direcaoTiro = 1;
 							}
+							inimigo02.atirou = true;
 						}
 					}
 
-					
-		//++++++++++++++++++ COLUNAS +++++++++++++++++++++++++++++++++++++++
 
-					if (playerTopX > playerBotX) {
-						tiroTopX--;
-						tiroBotX++;
-					}
-					else if (playerTopX < playerBotX) {
-						tiroTopX++;
-						tiroBotX--;
-					}
+					if (fps % 2 == 0) {
+						if (inimigo02.atirou == true) {
+							if (inimigo02.direcaoTiro == 0) {
+								if (inimigo02.tiroY < 22) {
+									inimigo02.atirou = false;
+								}
+								else {
+									inimigo02.tiroY--;
 
-					if (distanciaPlayers == 0) {
-						quantidadePixel = 1;
-					}
-					else {
-						quantidadePixel = tamanhoTiro / distanciaPlayers;
-					}
-
-					if (tiroTopY != tiroBotY) {
-						for (int i = 0; i < quantidadePixel; i++) {
-							tiroTopY++;
-							tiroBotY--;
-							if (tiroTopY == tiroBotY) {
-								break;
+								}
 							}
-
-							ConsoleHelper::ImprimirASCIIExtended(tiroTopX, tiroTopY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
-							ConsoleHelper::ImprimirASCIIExtended(tiroBotX, tiroBotY, ConsoleColor::Black, ConsoleColor::DarkCyan, "Û");
-
+							else if (inimigo02.direcaoTiro == 1) {
+								if (inimigo02.tiroY > 81) {
+									inimigo02.atirou = false;
+								}
+								else {
+									inimigo02.tiroY++;
+								}
+							}
+							//Verificando se o tiro pegou no player
+							if (((inimigo02.tiroX >= playerBotX) && (inimigo02.tiroX <= playerBotX + 7))) {
+								if ((inimigo02.tiroY + 3 >= playerBotY) && (inimigo02.tiroY + 3 <= playerBotY)) {
+									inimigo02.atirou = false;
+									playerVidas--;
+								}
+							}
+							if ((inimigo02.tiroX >= playerTopX) && (inimigo02.tiroX <= playerTopX + 7)) {
+								if ((inimigo02.tiroY >= playerTopY + 4) && (inimigo02.tiroY <= playerTopY + 4)) {
+									inimigo02.atirou = false;
+									playerVidas--;
+								}
+							}
+							ImprimirTiroInimigo(inimigo02.tiroX, inimigo02.tiroY);
 						}
 					}
-
 				}
 
+
+				//----------------- Movendo inimigo03---------------------------------------------------------------
+				//----------------- Movendo inimigo03---------------------------------------------------------------
+
+				if (inimigo03.vivo == true) {
+					//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
+					if ((inimigo03.Xatual == inimigo03.Xproximo) || (inimigo03.Yatual == inimigo03.Yproximo)) {
+						inimigo03.Xproximo = randInimigoX();
+						inimigo03.Yproximo = randInimigoY();
+					}
+
+					else {
+
+						inimigo03 = MoverInimigo(inimigo03, animar);
+
+					}
+
+					if (fps % 60 == 0) {
+						//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
+						if (inimigo03.atirou == false) {
+							inimigo03.tiroX = inimigo03.Xatual;
+							inimigo03.tiroY = inimigo03.Yatual;
+							if (inimigo03.Xproximo > 62) {
+								inimigo03.direcaoTiro = 0;
+							}
+							else if (inimigo03.atirou < 62) {
+								inimigo03.direcaoTiro = 1;
+							}
+							inimigo03.atirou = true;
+						}
+					}
+
+
+					if (fps % 2 == 0) {
+						if (inimigo03.atirou == true) {
+							if (inimigo03.direcaoTiro == 0) {
+								if (inimigo03.tiroY < 22) {
+									inimigo03.atirou = false;
+								}
+								else {
+									inimigo03.tiroY--;
+
+								}
+							}
+							else if (inimigo03.direcaoTiro == 1) {
+								if (inimigo03.tiroY > 81) {
+									inimigo03.atirou = false;
+								}
+								else {
+									inimigo03.tiroY++;
+								}
+							}
+							//Verificando se o tiro pegou no player
+							if (((inimigo03.tiroX >= playerBotX) && (inimigo03.tiroX <= playerBotX + 7))) {
+								if ((inimigo03.tiroY + 3 >= playerBotY) && (inimigo03.tiroY + 3 <= playerBotY)) {
+									inimigo03.atirou = false;
+									playerVidas--;
+								}
+							}
+							if ((inimigo03.tiroX >= playerTopX) && (inimigo03.tiroX <= playerTopX + 7)) {
+								if ((inimigo03.tiroY >= playerTopY + 4) && (inimigo03.tiroY <= playerTopY + 4)) {
+									inimigo03.atirou = false;
+									playerVidas--;
+								}
+							}
+							ImprimirTiroInimigo(inimigo03.tiroX, inimigo03.tiroY);
+						}
+					}
+				}
+
+				//-----------------------------------------------------------------------------------
 			}
+
+			//------------------------- ATUALIZANDO O SCORE----------------------
+			//------------------------- ATUALIZANDO O SCORE----------------------
 			if (SCORE_SOMAR > 0) {
 				int aux;
 				SCORE[3] += SCORE_SOMAR;
@@ -603,12 +765,13 @@ int main() {
 				}
 				if (SCORE[1] > 9) {
 					aux = SCORE[1] % 10;
-					SCORE[0] += (SCORE[3] - aux) / 10;
+					SCORE[0] += (SCORE[1] - aux) / 10;
 					SCORE[1] = aux;
 				}
 				if (SCORE[0] > 9) {
 					SCORE[0] = 9;
 				}
+				SCORE_SOMAR = 0;
 			}
 			
 			playerAtirou = false;
