@@ -47,7 +47,6 @@ void ImprimirNaveEm(int x, int y, bool animar) {
 }
 
 
-
 void ImprimirInimigo01(int x, int y, bool animar){
 	if (animar) {
 		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue, "  Ü");
@@ -111,9 +110,17 @@ TipoInimigo MoverInimigo(TipoInimigo inimigo, bool anim) {
 }
 
 
+void ImpAqueciArma(int x, int y) {
+	ConsoleHelper::ImprimirASCIIExtended(x, y,    "ÜÜÜ");
+	ConsoleHelper::ImprimirASCIIExtended(x, y+1,  "ÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(x, y+2,  "ßßß");
+}
+
 void ImprimirScore(int n, int x, int y) {
+	Console::ForegroundColor = ConsoleColor::White;
 	switch (n)
 	{
+		
 		case 0:
 			ConsoleHelper::ImprimirASCIIExtended(x, y,     " ÜÜÜÜ ");
 			ConsoleHelper::ImprimirASCIIExtended(x, y + 1, "ÛÛ  ÛÛ");
@@ -250,6 +257,8 @@ int main() {
 	int spriteVidasX = 10;
 	int playerKills = 0;
 	int distanciaPlayers;
+	int playerCombustivel = 14;
+	int decrCombustivel = 0;
 
 
 	bool playerAtirou = false;
@@ -259,6 +268,7 @@ int main() {
 	int tiroTopX;
 	int tiroBotY;
 	int tiroBotX;
+	int aquecimentoArma = 1;
 
 
 	int inimigosNaTela = 0;
@@ -333,18 +343,23 @@ int main() {
 
 			if (Console::KeyAvailable) {
 				tecla = Console::ReadKey(true);		//True para esconder a tecla apertada, False para mostrar
-				if ((tecla.Key == ConsoleKey::LeftArrow) && ((playerBotX > 14) && (playerTopX < 137))) {
-					playerBotX -= 2;
-					playerTopX += 2;
-				}
+				if (playerCombustivel > 0) {
+					if ((tecla.Key == ConsoleKey::LeftArrow) && ((playerBotX > 14) && (playerTopX < 137))) {
+						playerBotX -= 2;
+						playerTopX += 2;
+					}
 
-				if ((tecla.Key == ConsoleKey::RightArrow) && ((playerBotX < 137) && (playerTopX > 14))) {
-					playerBotX += 2;
-					playerTopX -= 2;
+					if ((tecla.Key == ConsoleKey::RightArrow) && ((playerBotX < 137) && (playerTopX > 14))) {
+						playerBotX += 2;
+						playerTopX -= 2;
+					}
 				}
 
 				if (tecla.Key == ConsoleKey::Spacebar) {
-					playerAtirou = true;
+					if (aquecimentoArma <= 13) {
+						aquecimentoArma++;
+						playerAtirou = true;
+					}
 				}
 			}
 
@@ -352,7 +367,6 @@ int main() {
 			//+++++++++++++++++++++++++ SCORE ++++++++++++++++++++++++++++++++++++++++++++++
 			SCORE_POSITIONX = (telaX - ((6 + fontEspace) * 5)) / 2;
 			
-
 			ImprimirScore(SCORE[0], SCORE_POSITIONX, 12);
 			SCORE_POSITIONX += 6 + fontEspace;
 
@@ -505,6 +519,16 @@ int main() {
 					}
 
 				}
+
+				//++++++++++++++++++++++ RESFRIAMENTO DE ARMA ++++++++++++++++++++++++++++++++++++++++
+				//++++++++++++++++++++++ RESFRIAMENTO DE ARMA ++++++++++++++++++++++++++++++++++++++++
+
+				if (fps % 30 == 0) {
+					if (aquecimentoArma > 1) {
+						aquecimentoArma--;
+					}
+				}
+
 			}
 
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -748,6 +772,7 @@ int main() {
 				//-----------------------------------------------------------------------------------
 			}
 
+
 			//------------------------- ATUALIZANDO O SCORE----------------------
 			//------------------------- ATUALIZANDO O SCORE----------------------
 			if (SCORE_SOMAR > 0) {
@@ -802,7 +827,53 @@ int main() {
 			}
 
 
+			//+++++++++++++++++++++++++ IMPRIMINDO BARRA DE AQUECIMENTO DE ARMA ++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ IMPRIMINDO BARRA DE AQUECIMENTO DE ARMA ++++++++++++++++++++++++++++
 
+
+			ConsoleHelper::ImprimirASCIIExtended(135, 94, ConsoleColor::Black, ConsoleColor::Red, "Û  Û");
+			ConsoleHelper::ImprimirASCIIExtended(135, 95, ConsoleColor::Black, ConsoleColor::Red, "ÛÛÛÛ");
+			ConsoleHelper::ImprimirASCIIExtended(135, 96, ConsoleColor::Black, ConsoleColor::Red, "Û  Û");
+			if (aquecimentoArma > 12) {
+				Console::ForegroundColor = ConsoleColor::Red;
+			}
+			else {
+				Console::ForegroundColor = ConsoleColor::DarkCyan;
+			}
+
+			for (int i = 1; i <= aquecimentoArma; i++) {
+				ImpAqueciArma(86+(3*i), 94);
+			}
+			/*if (aquecimentoArma >= 1) {
+				ImpAqueciArma(90);
+			}
+			if (aquecimentoArma >= 2) {
+				ImpAqueciArma(94);
+			}
+			if (aquecimentoArma >= 3) {
+				ImpAqueciArma(98);
+			}
+			if (aquecimentoArma >= 4) {
+				ImpAqueciArma(102);
+			}
+			if (aquecimentoArma >= 5) {
+				ImpAqueciArma(106);
+			}
+			if (aquecimentoArma >= 6) {
+				ImpAqueciArma(110);
+			}
+			if (aquecimentoArma >= 7) {
+				ImpAqueciArma(114);
+			}
+			if (aquecimentoArma >= 8) {
+				ImpAqueciArma(118);
+			}
+			if (aquecimentoArma >= 9) {
+				ImpAqueciArma(122);
+			}
+			if (aquecimentoArma >= 10) {
+				ImpAqueciArma(126);
+			}*/
 
 			//+++++++++++++++++++++++++ LOGICA ANIMAÇÃO ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ LOGICA ANIMAÇÃO ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -821,11 +892,6 @@ int main() {
 			if (fps == 0) {
 				fps = 60;
 			}
-
-			break;
-
-
-		case ESTADO_JOGO_PLAY:
 
 			break;
 		}
