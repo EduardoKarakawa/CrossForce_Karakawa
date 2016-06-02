@@ -49,9 +49,9 @@ void ImprimirNaveEm(int x, int y, bool animar) {
 
 void ImprimirInimigo01(int x, int y, bool animar){
 	if (animar) {
-		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue, "  Ü");
-		ConsoleHelper::ImprimirASCIIExtended(x + 3, y, ConsoleColor::DarkBlue, ConsoleColor::Blue, "ßß");
-		ConsoleHelper::ImprimirASCIIExtended(x + 5, y, ConsoleColor::Black, ConsoleColor::DarkBlue, "Ü  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::Blue, "  Ü");
+		ConsoleHelper::ImprimirASCIIExtended(x + 3, y, ConsoleColor::Blue, ConsoleColor::Blue, "ßß");
+		ConsoleHelper::ImprimirASCIIExtended(x + 5, y, ConsoleColor::Black, ConsoleColor::Blue, "Ü  ");
 
 		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta, "ÜÜÜÜÜ");
 		ConsoleHelper::ImprimirASCIIExtended(x + 5, y + 1, ConsoleColor::DarkMagenta, ConsoleColor::White, "ßß");
@@ -64,9 +64,9 @@ void ImprimirInimigo01(int x, int y, bool animar){
 		ConsoleHelper::ImprimirASCIIExtended(x + 5, y + 3, ConsoleColor::Black, ConsoleColor::DarkMagenta, "ßß ");
 	}
 	else {
-		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::DarkBlue,		"  Ü");
-		ConsoleHelper::ImprimirASCIIExtended(x+3, y, ConsoleColor::DarkBlue, ConsoleColor::Blue,	   "ßß");
-		ConsoleHelper::ImprimirASCIIExtended(x+5, y, ConsoleColor::Black, ConsoleColor::DarkBlue,		 "Ü  ");
+		ConsoleHelper::ImprimirASCIIExtended(x, y, ConsoleColor::Black, ConsoleColor::Blue,		"  Ü");
+		ConsoleHelper::ImprimirASCIIExtended(x+3, y, ConsoleColor::Blue, ConsoleColor::Blue,	   "ßß");
+		ConsoleHelper::ImprimirASCIIExtended(x+5, y, ConsoleColor::Black, ConsoleColor::Blue,		 "Ü  ");
 		ConsoleHelper::ImprimirASCIIExtended(x, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta,  "Ü");
 		ConsoleHelper::ImprimirASCIIExtended(x+1, y + 1, ConsoleColor::DarkMagenta, ConsoleColor::White, "ßß");
 		ConsoleHelper::ImprimirASCIIExtended(x+3, y + 1, ConsoleColor::Black, ConsoleColor::DarkMagenta,   "ÜÜÜÜÜ");
@@ -110,10 +110,10 @@ TipoInimigo MoverInimigo(TipoInimigo inimigo, bool anim) {
 }
 
 
-void ImpAqueciArma(int x, int y) {
+void ImpBarra(int x, int y) {
 	ConsoleHelper::ImprimirASCIIExtended(x, y,    "ÜÜÜ");
 	ConsoleHelper::ImprimirASCIIExtended(x, y+1,  "ÛÛÛ");
-	ConsoleHelper::ImprimirASCIIExtended(x, y+2,  "ßßß");
+	ConsoleHelper::ImprimirASCIIExtended(x, y+2,  "ÛÛÛ");
 }
 
 void ImprimirScore(int n, int x, int y) {
@@ -222,10 +222,6 @@ int InimigoAtingido(int inimigo[8], int x, int y){
 	return 1;
 }
 
-
-void GameOver() {
-
-}
 
 int main() {
 
@@ -343,15 +339,17 @@ int main() {
 
 			if (Console::KeyAvailable) {
 				tecla = Console::ReadKey(true);		//True para esconder a tecla apertada, False para mostrar
-				if (playerCombustivel > 0) {
+				if (playerCombustivel > 0) {		//As armas so movem se tiver combustivel
 					if ((tecla.Key == ConsoleKey::LeftArrow) && ((playerBotX > 14) && (playerTopX < 137))) {
 						playerBotX -= 2;
 						playerTopX += 2;
+						decrCombustivel++;
 					}
 
 					if ((tecla.Key == ConsoleKey::RightArrow) && ((playerBotX < 137) && (playerTopX > 14))) {
 						playerBotX += 2;
 						playerTopX -= 2;
+						decrCombustivel++;
 					}
 				}
 
@@ -399,6 +397,7 @@ int main() {
 
 
 			if (playerVidas > 0) {
+
 				//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
 				//+++++++++++++++++++++++++ PLAYER TOP ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -802,7 +801,7 @@ int main() {
 			playerAtirou = false;
 			
 			
-			//+++++++++++++++++++++++++ LINHA CIMA HUD ++++++++++++++++++++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ LINHA BAIXO HUD ++++++++++++++++++++++++++++++++++++++++++++++
 			ConsoleHelper::ImprimirASCIIExtended(0, 85, ConsoleColor::Black, ConsoleColor::DarkGreen, "ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ");
 
 
@@ -827,13 +826,13 @@ int main() {
 			}
 
 
-			//+++++++++++++++++++++++++ IMPRIMINDO BARRA DE AQUECIMENTO DE ARMA ++++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ IMPRIMINDO BARRA DE AQUECIMENTO DE ARMA ++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ BARRA DE AQUECIMENTO DE ARMA ++++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ BARRA DE AQUECIMENTO DE ARMA ++++++++++++++++++++++++++++
 
 
-			ConsoleHelper::ImprimirASCIIExtended(135, 94, ConsoleColor::Black, ConsoleColor::Red, "Û  Û");
-			ConsoleHelper::ImprimirASCIIExtended(135, 95, ConsoleColor::Black, ConsoleColor::Red, "ÛÛÛÛ");
-			ConsoleHelper::ImprimirASCIIExtended(135, 96, ConsoleColor::Black, ConsoleColor::Red, "Û  Û");
+			ConsoleHelper::ImprimirASCIIExtended(135, 94, ConsoleColor::Black, ConsoleColor::Magenta, "Ü  Ü");
+			ConsoleHelper::ImprimirASCIIExtended(135, 95, ConsoleColor::Black, ConsoleColor::Magenta, "ÛÜÜÛ");
+			ConsoleHelper::ImprimirASCIIExtended(135, 96, ConsoleColor::Black, ConsoleColor::Magenta, "Û  Û");
 			if (aquecimentoArma > 12) {
 				Console::ForegroundColor = ConsoleColor::Red;
 			}
@@ -842,38 +841,30 @@ int main() {
 			}
 
 			for (int i = 1; i <= aquecimentoArma; i++) {
-				ImpAqueciArma(86+(3*i), 94);
+				ImpBarra(86 + (3*i), 94);
 			}
-			/*if (aquecimentoArma >= 1) {
-				ImpAqueciArma(90);
+
+
+			//++++++++++++++++++++++++ BARRA DE COMBUSTIVEL ++++++++++++++++++++++++++++++++++++++ 
+			//++++++++++++++++++++++++ BARRA DE COMBUSTIVEL ++++++++++++++++++++++++++++++++++++++
+
+			//Decrementa 1 do combustivel a cada 15 movimentações
+			if (decrCombustivel == 20) {
+				playerCombustivel--;
+				decrCombustivel = 0;
 			}
-			if (aquecimentoArma >= 2) {
-				ImpAqueciArma(94);
+
+			Console::ForegroundColor = ConsoleColor::Yellow;
+
+			for (int i = 1; i <= playerCombustivel; i++) {
+				ImpBarra(86 + (3 * i), 88);
 			}
-			if (aquecimentoArma >= 3) {
-				ImpAqueciArma(98);
-			}
-			if (aquecimentoArma >= 4) {
-				ImpAqueciArma(102);
-			}
-			if (aquecimentoArma >= 5) {
-				ImpAqueciArma(106);
-			}
-			if (aquecimentoArma >= 6) {
-				ImpAqueciArma(110);
-			}
-			if (aquecimentoArma >= 7) {
-				ImpAqueciArma(114);
-			}
-			if (aquecimentoArma >= 8) {
-				ImpAqueciArma(118);
-			}
-			if (aquecimentoArma >= 9) {
-				ImpAqueciArma(122);
-			}
-			if (aquecimentoArma >= 10) {
-				ImpAqueciArma(126);
-			}*/
+
+
+			ConsoleHelper::ImprimirASCIIExtended(82, 88, ConsoleColor::Black, ConsoleColor::Magenta, "ÜÜÜÜ");
+			ConsoleHelper::ImprimirASCIIExtended(82, 89, ConsoleColor::Black, ConsoleColor::Magenta, "ÛÜÜÜ");
+			ConsoleHelper::ImprimirASCIIExtended(82, 90, ConsoleColor::Black, ConsoleColor::Magenta, "ÛÜÜÜ");
+
 
 			//+++++++++++++++++++++++++ LOGICA ANIMAÇÃO ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ LOGICA ANIMAÇÃO ++++++++++++++++++++++++++++++++++++++++++++++++++++
