@@ -17,7 +17,7 @@ struct TipoInimigo {
 };
 
 
-int  fps = 60;
+
 
 bool InimigoAtindo(int tiroX, int tiroY, TipoInimigo inimigo) {
 	if ((tiroX <= inimigo.Xatual + 7) && (tiroX >= inimigo.Xatual)) {
@@ -89,8 +89,8 @@ void ImprimirTiroInimigo(int x, int y) {
 }
 
 
-TipoInimigo MoverInimigo(TipoInimigo inimigo, bool anim) {
-	if (fps % 2 == 0) {
+TipoInimigo MoverInimigo(TipoInimigo inimigo, bool anim, int fpsTemp) {
+	if (fpsTemp % 2 == 0) {
 		if (inimigo.Xatual > inimigo.Xproximo) {
 			inimigo.Xatual--;
 		}
@@ -237,7 +237,7 @@ TipoInimigo IniInimigo(TipoInimigo inimigoTemp) {
 }
 
 
-TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp) {
+TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp, int fpsTemp) {
 	if (inimigoTemp.vivo == true) {
 		//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
 		if ((inimigoTemp.Xatual == inimigoTemp.Xproximo) || (inimigoTemp.Yatual == inimigoTemp.Yproximo)) {
@@ -247,27 +247,11 @@ TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp) {
 
 		else {
 
-			inimigoTemp = MoverInimigo(inimigoTemp, animaTemp);
+			inimigoTemp = MoverInimigo(inimigoTemp, animaTemp, fpsTemp);
 
 		}
 
-		if (fps % 60 == 0) {
-			//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
-			if (inimigoTemp.atirou == false) {
-				inimigoTemp.tiroX = inimigoTemp.Xatual;
-				inimigoTemp.tiroY = inimigoTemp.Yatual;
-				if (inimigoTemp.Xproximo > 62) {
-					inimigoTemp.direcaoTiro = 0;
-				}
-				else if (inimigoTemp.atirou < 62) {
-					inimigoTemp.direcaoTiro = 1;
-				}
-				inimigoTemp.atirou = true;
-			}
-		}
-
-
-		if (fps % 2 == 0) {
+		if (fpsTemp % 2 == 0) {
 			if (inimigoTemp.atirou == true) {
 				if (inimigoTemp.direcaoTiro == 0) {
 					if (inimigoTemp.tiroY < 22) {
@@ -293,6 +277,25 @@ TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp) {
 	return inimigoTemp;
 }
 
+
+TipoInimigo InimigoAtira(TipoInimigo inimigoTemp, int fpsTemp) {
+	if (fpsTemp % 60 == 0) {
+		//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
+		if (inimigoTemp.atirou == false) {
+			inimigoTemp.tiroX = inimigoTemp.Xatual;
+			inimigoTemp.tiroY = inimigoTemp.Yatual;
+			if (inimigoTemp.Yatual < 52) {
+				
+				inimigoTemp.direcaoTiro = 0;
+			}
+			else if (inimigoTemp.Yatual >= 52) {
+				inimigoTemp.direcaoTiro = 1;
+			}
+			inimigoTemp.atirou = true;
+		}
+	}
+	return inimigoTemp;
+}
 
 int VerPlayerAtingido(TipoInimigo inimigoTemp, int playerVidasTemp, int playerBotXTemp, int playerBotYTemp, int playerTopYTemp, int playerTopXTemp) {
 	//Verificando se o tiro pegou no player
@@ -356,6 +359,7 @@ int main() {
 
 	srand(time(NULL));
 
+	int  fps = 60;
 
 	int const telaX = 159;
 	int const telaY = 104;
@@ -446,24 +450,26 @@ int main() {
 
 			if (Console::KeyAvailable) {
 				tecla = Console::ReadKey(true);		//True para esconder a tecla apertada, False para mostrar
-				if (playerCombustivel > 0) {		//As armas so movem se tiver combustivel
-					if ((tecla.Key == ConsoleKey::LeftArrow) && ((playerBotX > 14) && (playerTopX < 137))) {
-						playerBotX -= 2;
-						playerTopX += 2;
-						decrCombustivel++;
+				if (playerVidas > 0) {
+					if (playerCombustivel > 0) {		//As armas so movem se tiver combustivel
+						if ((tecla.Key == ConsoleKey::LeftArrow) && ((playerBotX > 14) && (playerTopX < 137))) {
+							playerBotX -= 2;
+							playerTopX += 2;
+							decrCombustivel++;
+						}
+
+						if ((tecla.Key == ConsoleKey::RightArrow) && ((playerBotX < 137) && (playerTopX > 14))) {
+							playerBotX += 2;
+							playerTopX -= 2;
+							decrCombustivel++;
+						}
 					}
 
-					if ((tecla.Key == ConsoleKey::RightArrow) && ((playerBotX < 137) && (playerTopX > 14))) {
-						playerBotX += 2;
-						playerTopX -= 2;
-						decrCombustivel++;
-					}
-				}
-
-				if (tecla.Key == ConsoleKey::Spacebar) {
-					if (aquecimentoArma <= 13) {
-						aquecimentoArma++;
-						playerAtirou = true;
+					if (tecla.Key == ConsoleKey::Spacebar) {
+						if (aquecimentoArma <= 13) {
+							aquecimentoArma++;
+							playerAtirou = true;
+						}
 					}
 				}
 			}
@@ -694,7 +700,8 @@ int main() {
 						playerVidas--;
 						inimigo01.atirou = false;
 					}
-					inimigo01 = ControlInimigo(inimigo01, animar);
+					inimigo01 = ControlInimigo(inimigo01, animar, fps);
+					inimigo01 = InimigoAtira(inimigo01, fps);
 
 				}
 
@@ -714,7 +721,8 @@ int main() {
 						playerVidas--;
 						inimigo02.atirou = false;
 					}
-					inimigo02 = ControlInimigo(inimigo02, animar);
+					inimigo02 = ControlInimigo(inimigo02, animar, fps);
+					inimigo02 = InimigoAtira(inimigo02, fps);
 
 				}
 
@@ -734,7 +742,8 @@ int main() {
 						playerVidas--;
 						inimigo03.atirou = false;
 					}
-					inimigo03 = ControlInimigo(inimigo03, animar);
+					inimigo03 = ControlInimigo(inimigo03, animar, fps);
+					inimigo03 = InimigoAtira(inimigo03, fps);
 
 				}
 
