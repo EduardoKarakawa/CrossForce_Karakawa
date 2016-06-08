@@ -116,6 +116,7 @@ void ImpBarra(int x, int y) {
 	ConsoleHelper::ImprimirASCIIExtended(x, y+2,  "ÛÛÛ");
 }
 
+
 void ImprimirScore(int n, int x, int y) {
 	Console::ForegroundColor = ConsoleColor::White;
 	switch (n)
@@ -223,6 +224,134 @@ int InimigoAtingido(int inimigo[8], int x, int y){
 }
 
 
+TipoInimigo IniInimigo(TipoInimigo inimigoTemp) {
+	inimigoTemp.Xatual = randInimigoX();
+	inimigoTemp.Xproximo = randInimigoX();
+	inimigoTemp.Yatual = randInimigoY();
+	inimigoTemp.Yproximo = randInimigoY();
+	inimigoTemp.vivo = false;
+	inimigoTemp.tiroX = 1;
+	inimigoTemp.tiroY = 2;
+	inimigoTemp.atirou = false;
+	return inimigoTemp;
+}
+
+
+TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp) {
+	if (inimigoTemp.vivo == true) {
+		//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
+		if ((inimigoTemp.Xatual == inimigoTemp.Xproximo) || (inimigoTemp.Yatual == inimigoTemp.Yproximo)) {
+			inimigoTemp.Xproximo = randInimigoX();
+			inimigoTemp.Yproximo = randInimigoY();
+		}
+
+		else {
+
+			inimigoTemp = MoverInimigo(inimigoTemp, animaTemp);
+
+		}
+
+		if (fps % 60 == 0) {
+			//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
+			if (inimigoTemp.atirou == false) {
+				inimigoTemp.tiroX = inimigoTemp.Xatual;
+				inimigoTemp.tiroY = inimigoTemp.Yatual;
+				if (inimigoTemp.Xproximo > 62) {
+					inimigoTemp.direcaoTiro = 0;
+				}
+				else if (inimigoTemp.atirou < 62) {
+					inimigoTemp.direcaoTiro = 1;
+				}
+				inimigoTemp.atirou = true;
+			}
+		}
+
+
+		if (fps % 2 == 0) {
+			if (inimigoTemp.atirou == true) {
+				if (inimigoTemp.direcaoTiro == 0) {
+					if (inimigoTemp.tiroY < 22) {
+						inimigoTemp.atirou = false;
+					}
+					else {
+						inimigoTemp.tiroY-=2;
+
+					}
+				}
+				else if (inimigoTemp.direcaoTiro == 1) {
+					if (inimigoTemp.tiroY > 81) {
+						inimigoTemp.atirou = false;
+					}
+					else {
+						inimigoTemp.tiroY+=2;
+					}
+				}
+				ImprimirTiroInimigo(inimigoTemp.tiroX, inimigoTemp.tiroY);
+			}
+		}
+	}
+	return inimigoTemp;
+}
+
+
+int VerPlayerAtingido(TipoInimigo inimigoTemp, int playerVidasTemp, int playerBotXTemp, int playerBotYTemp, int playerTopYTemp, int playerTopXTemp) {
+	//Verificando se o tiro pegou no player
+	if (((inimigoTemp.tiroX >= playerBotXTemp) && (inimigoTemp.tiroX <= playerBotXTemp + 7))) {
+		if ((inimigoTemp.tiroY + 3 >= playerBotYTemp) && (inimigoTemp.tiroY + 3 <= playerBotYTemp)) {
+			playerVidasTemp--;
+		}
+	}
+	if ((inimigoTemp.tiroX >= playerTopXTemp) && (inimigoTemp.tiroX <= playerTopXTemp + 7)) {
+		if ((inimigoTemp.tiroY >= playerTopYTemp + 4) && (inimigoTemp.tiroY <= playerTopYTemp + 4)) {
+			playerVidasTemp--;
+		}
+	}
+	return playerVidasTemp;
+}
+
+
+TipoInimigo ControlNaveSpaw(TipoInimigo navespawTemp, bool animarTemp) {
+	navespawTemp.Xatual+=4;
+
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 12, navespawTemp.Yatual, ConsoleColor::DarkYellow, ConsoleColor::Red,             "ßßßßßßß");
+
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 4, navespawTemp.Yatual + 1, ConsoleColor::DarkRed, ConsoleColor::Yellow, "ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ");
+
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual, navespawTemp.Yatual + 2, ConsoleColor::Black, ConsoleColor::Yellow, "ÛÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 12, navespawTemp.Yatual + 2, ConsoleColor::Black, ConsoleColor::Yellow, "ßßßßßßß");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 27, navespawTemp.Yatual + 2, ConsoleColor::Black, ConsoleColor::Yellow, "ÛÛÛÛ");
+
+	if (animarTemp) {
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 4, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 12, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 19, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 27, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜÜ");
+	}
+	else {
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 8, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 16, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 23, navespawTemp.Yatual + 3, ConsoleColor::Black, ConsoleColor::White, "ÜÜÜÜ");
+	}
+
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual, navespawTemp.Yatual + 4, ConsoleColor::Black, ConsoleColor::Yellow, "ÜÜÜÜ");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 27, navespawTemp.Yatual + 4, ConsoleColor::Black, ConsoleColor::Yellow, "ÜÜÜÜ");
+
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual, navespawTemp.Yatual + 5, ConsoleColor::Black, ConsoleColor::Yellow, "ßßßß");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 4, navespawTemp.Yatual + 5, ConsoleColor::Black, ConsoleColor::Yellow, "ÜÜÜÜÜÜÜÜ");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 12, navespawTemp.Yatual + 5, ConsoleColor::Black, ConsoleColor::Yellow, "ÛÛÛÛÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 19, navespawTemp.Yatual + 5, ConsoleColor::Black, ConsoleColor::Yellow, "ÜÜÜÜÜÜÜÜ");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 27, navespawTemp.Yatual + 5, ConsoleColor::Black, ConsoleColor::Yellow, "ßßßß");
+																																	  
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 4, navespawTemp.Yatual + 6, ConsoleColor::Black, ConsoleColor::Yellow, "ßßßßßßßß");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 12, navespawTemp.Yatual + 6, ConsoleColor::DarkYellow, ConsoleColor::Yellow, "ßßßßßßß");
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 19, navespawTemp.Yatual + 6, ConsoleColor::Black, ConsoleColor::Yellow, "ßßßßßßßß");
+
+
+	ConsoleHelper::ImprimirASCIIExtended(navespawTemp.Xatual + 12, navespawTemp.Yatual + 7, ConsoleColor::Black, ConsoleColor::Red, "ßßßßßßß");
+	return navespawTemp;
+}
+
 int main() {
 
 	srand(time(NULL));
@@ -272,6 +401,7 @@ int main() {
 	TipoInimigo inimigo01;
 	TipoInimigo inimigo02;
 	TipoInimigo inimigo03;
+	TipoInimigo naveSpaw;
 
 	/*	
 	int X_atual, X_proximo, Y_atual, Y_proximo;
@@ -279,34 +409,11 @@ int main() {
 	bool vivo, atirou;
 	*/
 
-	inimigo01.Xatual   = randInimigoX();
-	inimigo01.Xproximo = randInimigoX();
-	inimigo01.Yatual   = randInimigoY();
-	inimigo01.Yproximo = randInimigoY();
-	inimigo01.vivo     = false;
-	inimigo01.tiroX	   = 1;
-	inimigo01.tiroY    = 2;
-	inimigo01.atirou   = false;
-
-	inimigo02.Xatual = randInimigoX();
-	inimigo02.Xproximo = randInimigoX();
-	inimigo02.Yatual = randInimigoY();
-	inimigo02.Yproximo = randInimigoY();
-	inimigo02.vivo = false;
-	inimigo02.tiroX = 1;
-	inimigo02.tiroY = 2;
-	inimigo02.atirou = false;
-
-
-	inimigo03.Xatual = randInimigoX();
-	inimigo03.Xproximo = randInimigoX();
-	inimigo03.Yatual = randInimigoY();
-	inimigo03.Yproximo = randInimigoY();
-	inimigo03.vivo = false;
-	inimigo03.tiroX = 1;
-	inimigo03.tiroY = 2;
-	inimigo03.atirou = false;
-
+	inimigo01 = IniInimigo(inimigo01);
+	inimigo02 = IniInimigo(inimigo02);
+	inimigo03 = IniInimigo(inimigo03);
+	naveSpaw = IniInimigo(naveSpaw);
+	naveSpaw.direcaoTiro = 0;
 	
 
 	bool animar = true;
@@ -522,7 +629,7 @@ int main() {
 				//++++++++++++++++++++++ RESFRIAMENTO DE ARMA ++++++++++++++++++++++++++++++++++++++++
 				//++++++++++++++++++++++ RESFRIAMENTO DE ARMA ++++++++++++++++++++++++++++++++++++++++
 
-				if (fps % 30 == 0) {
+				if (fps % 20 == 0) {
 					if (aquecimentoArma > 1) {
 						aquecimentoArma--;
 					}
@@ -537,237 +644,101 @@ int main() {
 
 				//Verificando se a variavel tem a posição de um inimigo
 				if (fps % 60 == 0) {
-					if (inimigo01.vivo == false)
+					if ((!inimigo01.vivo) && (naveSpaw.direcaoTiro == 0))
 					{
 						inimigo01.Xproximo = randInimigoX();
 						inimigo01.Yproximo = randInimigoY();
-						inimigo01.vivo = true;
+						naveSpaw.Xproximo = inimigo01.Xatual;
+						naveSpaw.Xatual = 0;
+						naveSpaw.Yatual = inimigo01.Yatual;
+						naveSpaw.direcaoTiro = 1;
+						naveSpaw.vivo = true;
 					}
-					else if (inimigo02.vivo == false)
+					else if ((!inimigo02.vivo) && (naveSpaw.direcaoTiro == 0))
 					{
 						inimigo02.Xproximo = randInimigoX();
 						inimigo02.Yproximo = randInimigoY();
-						inimigo02.vivo = true;
+						naveSpaw.Xproximo = inimigo02.Xatual;
+						naveSpaw.Xatual = 0;
+						naveSpaw.Yatual = inimigo02.Yatual;
+						naveSpaw.direcaoTiro = 2;
+						naveSpaw.vivo = true;
 					}
-					else if (inimigo03.vivo == false)
+					else if ((!inimigo03.vivo) && (naveSpaw.direcaoTiro == 0))
 					{
 						inimigo03.Xproximo = randInimigoX();
 						inimigo03.Yproximo = randInimigoY();
-						inimigo03.vivo = true;
+						naveSpaw.Xproximo = inimigo03.Xatual;
+						naveSpaw.Xatual = 0;
+						naveSpaw.Yatual = inimigo03.Yatual;
+						naveSpaw.direcaoTiro = 3;
+						naveSpaw.vivo = true;
 					}
 				}
 
-
-				//----------------- Movendo inimigo01---------------------------------------------------------------
-				//----------------- Movendo inimigo01---------------------------------------------------------------
-
-				if (inimigo01.vivo == true) {
-					//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
-					if ((inimigo01.Xatual == inimigo01.Xproximo) || (inimigo01.Yatual == inimigo01.Yproximo)) {
-						inimigo01.Xproximo = randInimigoX();
-						inimigo01.Yproximo = randInimigoY();
-					}
-
-					else {
-
-						inimigo01 = MoverInimigo(inimigo01, animar);
-
-					}
-
-					if (fps % 60 == 0) {
-						//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
-						if (inimigo01.atirou == false) {
-							inimigo01.tiroX = inimigo01.Xatual;
-							inimigo01.tiroY = inimigo01.Yatual;
-							if (inimigo01.Xproximo > 62) {
-								inimigo01.direcaoTiro = 0;
-							}
-							else if (inimigo01.atirou < 62) {
-								inimigo01.direcaoTiro = 1;
-							}
-							inimigo01.atirou = true;
-						}
-					}
-
-
-					if (fps % 2 == 0) {
-						if (inimigo01.atirou == true) {
-							if (inimigo01.direcaoTiro == 0) {
-								if (inimigo01.tiroY < 22) {
-									inimigo01.atirou = false;
-								}
-								else {
-									inimigo01.tiroY--;
-
-								}
-							}
-							else if (inimigo01.direcaoTiro == 1) {
-								if (inimigo01.tiroY > 81) {
-									inimigo01.atirou = false;
-								}
-								else {
-									inimigo01.tiroY++;
-								}
-							}
-							//Verificando se o tiro pegou no player
-							if (((inimigo01.tiroX >= playerBotX) && (inimigo01.tiroX <= playerBotX + 7))) {
-								if ((inimigo01.tiroY + 3 >= playerBotY) && (inimigo01.tiroY + 3 <= playerBotY)) {
-									inimigo01.atirou = false;
-									playerVidas--;
-								}
-							}
-							if ((inimigo01.tiroX >= playerTopX) && (inimigo01.tiroX <= playerTopX + 7)) {
-								if ((inimigo01.tiroY >= playerTopY + 4) && (inimigo01.tiroY <= playerTopY + 4)) {
-									inimigo01.atirou = false;
-									playerVidas--;
-								}
-							}
-							ImprimirTiroInimigo(inimigo01.tiroX, inimigo01.tiroY);
-						}
-					}
+				if (naveSpaw.vivo) {
+					naveSpaw = ControlNaveSpaw(naveSpaw,animar);
 				}
+				//----------------- Movendo inimigo01---------------------------------------------------------------
+				//----------------- Movendo inimigo01---------------------------------------------------------------
 
+				if ((inimigo01.Xatual <= naveSpaw.Xatual+15) && (naveSpaw.direcaoTiro == 1)) {
+					naveSpaw.vivo = false;
+					naveSpaw.direcaoTiro = 0;
+					inimigo01.vivo = true;
+				}
+				
+				if (inimigo01.vivo) {
+
+					if ((playerVidas != VerPlayerAtingido(inimigo01, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo01.atirou)) {
+						playerVidas--;
+						inimigo01.atirou = false;
+					}
+					inimigo01 = ControlInimigo(inimigo01, animar);
+
+				}
 
 
 				//----------------- Movendo inimigo02---------------------------------------------------------------
 				//----------------- Movendo inimigo02---------------------------------------------------------------
 
-				if (inimigo02.vivo == true) {
-					//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
-					if ((inimigo02.Xatual == inimigo02.Xproximo) || (inimigo02.Yatual == inimigo02.Yproximo)) {
-						inimigo02.Xproximo = randInimigoX();
-						inimigo02.Yproximo = randInimigoY();
+				if ((inimigo02.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 2)) {
+					naveSpaw.vivo = false;
+					naveSpaw.direcaoTiro = 0;
+					inimigo02.vivo = true;
+				}
+
+				if (inimigo02.vivo) {
+
+					if ((playerVidas != VerPlayerAtingido(inimigo02, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo02.atirou)) {
+						playerVidas--;
+						inimigo02.atirou = false;
 					}
+					inimigo02 = ControlInimigo(inimigo02, animar);
 
-					else {
-
-						inimigo02 = MoverInimigo(inimigo02, animar);
-
-					}
-
-					if (fps % 60 == 0) {
-						//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
-						if (inimigo02.atirou == false) {
-							inimigo02.tiroX = inimigo02.Xatual;
-							inimigo02.tiroY = inimigo02.Yatual;
-							if (inimigo02.Xproximo > 62) {
-								inimigo02.direcaoTiro = 0;
-							}
-							else if (inimigo02.atirou < 62) {
-								inimigo02.direcaoTiro = 1;
-							}
-							inimigo02.atirou = true;
-						}
-					}
-
-
-					if (fps % 2 == 0) {
-						if (inimigo02.atirou == true) {
-							if (inimigo02.direcaoTiro == 0) {
-								if (inimigo02.tiroY < 22) {
-									inimigo02.atirou = false;
-								}
-								else {
-									inimigo02.tiroY--;
-
-								}
-							}
-							else if (inimigo02.direcaoTiro == 1) {
-								if (inimigo02.tiroY > 81) {
-									inimigo02.atirou = false;
-								}
-								else {
-									inimigo02.tiroY++;
-								}
-							}
-							//Verificando se o tiro pegou no player
-							if (((inimigo02.tiroX >= playerBotX) && (inimigo02.tiroX <= playerBotX + 7))) {
-								if ((inimigo02.tiroY + 3 >= playerBotY) && (inimigo02.tiroY + 3 <= playerBotY)) {
-									inimigo02.atirou = false;
-									playerVidas--;
-								}
-							}
-							if ((inimigo02.tiroX >= playerTopX) && (inimigo02.tiroX <= playerTopX + 7)) {
-								if ((inimigo02.tiroY >= playerTopY + 4) && (inimigo02.tiroY <= playerTopY + 4)) {
-									inimigo02.atirou = false;
-									playerVidas--;
-								}
-							}
-							ImprimirTiroInimigo(inimigo02.tiroX, inimigo02.tiroY);
-						}
-					}
 				}
 
 
 				//----------------- Movendo inimigo03---------------------------------------------------------------
 				//----------------- Movendo inimigo03---------------------------------------------------------------
 
-				if (inimigo03.vivo == true) {
-					//Verificando a posiçao X e Y do inimigo para gerar um ponto de locomoção
-					if ((inimigo03.Xatual == inimigo03.Xproximo) || (inimigo03.Yatual == inimigo03.Yproximo)) {
-						inimigo03.Xproximo = randInimigoX();
-						inimigo03.Yproximo = randInimigoY();
-					}
-
-					else {
-
-						inimigo03 = MoverInimigo(inimigo03, animar);
-
-					}
-
-					if (fps % 60 == 0) {
-						//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
-						if (inimigo03.atirou == false) {
-							inimigo03.tiroX = inimigo03.Xatual;
-							inimigo03.tiroY = inimigo03.Yatual;
-							if (inimigo03.Xproximo > 62) {
-								inimigo03.direcaoTiro = 0;
-							}
-							else if (inimigo03.atirou < 62) {
-								inimigo03.direcaoTiro = 1;
-							}
-							inimigo03.atirou = true;
-						}
-					}
-
-
-					if (fps % 2 == 0) {
-						if (inimigo03.atirou == true) {
-							if (inimigo03.direcaoTiro == 0) {
-								if (inimigo03.tiroY < 22) {
-									inimigo03.atirou = false;
-								}
-								else {
-									inimigo03.tiroY--;
-
-								}
-							}
-							else if (inimigo03.direcaoTiro == 1) {
-								if (inimigo03.tiroY > 81) {
-									inimigo03.atirou = false;
-								}
-								else {
-									inimigo03.tiroY++;
-								}
-							}
-							//Verificando se o tiro pegou no player
-							if (((inimigo03.tiroX >= playerBotX) && (inimigo03.tiroX <= playerBotX + 7))) {
-								if ((inimigo03.tiroY + 3 >= playerBotY) && (inimigo03.tiroY + 3 <= playerBotY)) {
-									inimigo03.atirou = false;
-									playerVidas--;
-								}
-							}
-							if ((inimigo03.tiroX >= playerTopX) && (inimigo03.tiroX <= playerTopX + 7)) {
-								if ((inimigo03.tiroY >= playerTopY + 4) && (inimigo03.tiroY <= playerTopY + 4)) {
-									inimigo03.atirou = false;
-									playerVidas--;
-								}
-							}
-							ImprimirTiroInimigo(inimigo03.tiroX, inimigo03.tiroY);
-						}
-					}
+				if ((inimigo03.Xatual <= naveSpaw.Xatual+15) && (naveSpaw.direcaoTiro == 3)) {
+					naveSpaw.vivo = false;
+					naveSpaw.direcaoTiro = 0;
+					inimigo03.vivo = true;
 				}
 
+				if (inimigo03.vivo) {
+
+					if ((playerVidas != VerPlayerAtingido(inimigo03, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo03.atirou)) {
+						playerVidas--;
+						inimigo03.atirou = false;
+					}
+					inimigo03 = ControlInimigo(inimigo03, animar);
+
+				}
+
+				
 				//-----------------------------------------------------------------------------------
 			}
 
