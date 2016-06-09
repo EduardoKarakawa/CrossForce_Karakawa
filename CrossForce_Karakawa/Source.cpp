@@ -13,15 +13,25 @@ struct TipoInimigo {
 	int Xatual, Xproximo, Yatual, Yproximo;
 	int tiroX, tiroY;
 	int direcaoTiro;
-	bool vivo, atirou;
+	bool vivo, atirou, eInim;
 };
 
 
 
 
 bool InimigoAtindo(int tiroX, int tiroY, TipoInimigo inimigo) {
-	if ((tiroX <= inimigo.Xatual + 7) && (tiroX >= inimigo.Xatual)) {
-		if ((tiroY <= inimigo.Yatual + 3) && (tiroY >= inimigo.Yatual)) {
+	int l, h;
+	if (inimigo.eInim) {
+		l = 7;
+		h = 3;
+	}
+	else {
+		l = 5;
+		h = 5;
+	}
+
+	if ((tiroX <= inimigo.Xatual + l) && (tiroX >= inimigo.Xatual)) {
+		if ((tiroY <= inimigo.Yatual + h) && (tiroY >= inimigo.Yatual)) {
 			return true;
 		}
 	}
@@ -105,7 +115,9 @@ TipoInimigo MoverInimigo(TipoInimigo inimigo, bool anim, int fpsTemp) {
 			inimigo.Yatual++;
 		}
 	}
-	ImprimirInimigo01(inimigo.Xatual, inimigo.Yatual, anim);
+	if (inimigo.eInim) {
+		ImprimirInimigo01(inimigo.Xatual, inimigo.Yatual, anim);
+	}
 	return inimigo;
 }
 
@@ -233,6 +245,7 @@ TipoInimigo IniInimigo(TipoInimigo inimigoTemp) {
 	inimigoTemp.tiroX = 1;
 	inimigoTemp.tiroY = 2;
 	inimigoTemp.atirou = false;
+	inimigoTemp.eInim = false;
 	return inimigoTemp;
 }
 
@@ -246,9 +259,7 @@ TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp, int fpsTemp)
 		}
 
 		else {
-
-			inimigoTemp = MoverInimigo(inimigoTemp, animaTemp, fpsTemp);
-
+				inimigoTemp = MoverInimigo(inimigoTemp, animaTemp, fpsTemp);
 		}
 
 		if (fpsTemp % 2 == 0) {
@@ -279,7 +290,7 @@ TipoInimigo ControlInimigo(TipoInimigo inimigoTemp, bool animaTemp, int fpsTemp)
 
 
 TipoInimigo InimigoAtira(TipoInimigo inimigoTemp, int fpsTemp) {
-	if (fpsTemp % 60 == 0) {
+	if (fpsTemp % 50 == 0) {
 		//Virifica se o inimigo ja atirou, se nao, verifica a posição do inimigo e adiciona informações sobre o tiro
 		if (inimigoTemp.atirou == false) {
 			inimigoTemp.tiroX = inimigoTemp.Xatual;
@@ -297,14 +308,15 @@ TipoInimigo InimigoAtira(TipoInimigo inimigoTemp, int fpsTemp) {
 	return inimigoTemp;
 }
 
+
 int VerPlayerAtingido(TipoInimigo inimigoTemp, int playerVidasTemp, int playerBotXTemp, int playerBotYTemp, int playerTopYTemp, int playerTopXTemp) {
 	//Verificando se o tiro pegou no player
-	if (((inimigoTemp.tiroX >= playerBotXTemp) && (inimigoTemp.tiroX <= playerBotXTemp + 7))) {
-		if ((inimigoTemp.tiroY + 3 >= playerBotYTemp) && (inimigoTemp.tiroY + 3 <= playerBotYTemp)) {
+	if (((inimigoTemp.tiroX >= playerBotXTemp) && (inimigoTemp.tiroX <= playerBotXTemp + 8))) {
+		if ((inimigoTemp.tiroY + 4 >= playerBotYTemp) && (inimigoTemp.tiroY + 4 <= playerBotYTemp)) {
 			playerVidasTemp--;
 		}
 	}
-	if ((inimigoTemp.tiroX >= playerTopXTemp) && (inimigoTemp.tiroX <= playerTopXTemp + 7)) {
+	if ((inimigoTemp.tiroX >= playerTopXTemp) && (inimigoTemp.tiroX <= playerTopXTemp + 8)) {
 		if ((inimigoTemp.tiroY >= playerTopYTemp + 4) && (inimigoTemp.tiroY <= playerTopYTemp + 4)) {
 			playerVidasTemp--;
 		}
@@ -355,6 +367,32 @@ TipoInimigo ControlNaveSpaw(TipoInimigo navespawTemp, bool animarTemp) {
 	return navespawTemp;
 }
 
+
+TipoInimigo RestauraConbustivel(TipoInimigo restoreGasTemp, int playerCombustivelTemp, bool animaTemp, int fpsTemp) {
+	if (fpsTemp % 20 == 0) {
+		if (playerCombustivelTemp <= 5) {
+			restoreGasTemp.vivo = true;
+		}
+	}
+
+	if (restoreGasTemp.vivo){
+		restoreGasTemp = ControlInimigo(restoreGasTemp, animaTemp, fpsTemp);
+		restoreGasTemp.direcaoTiro++;
+
+
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual, restoreGasTemp.Yatual, ConsoleColor::Black, ConsoleColor::White, "Û");
+
+
+	} 
+
+	if(restoreGasTemp.direcaoTiro >= 300) {
+		restoreGasTemp.vivo = false;
+	}
+
+	return restoreGasTemp;
+}
+
+
 int main() {
 
 	srand(time(NULL));
@@ -384,7 +422,6 @@ int main() {
 	int playerBotY = 79;
 	int playerVidas = 3;
 	int spriteVidasX = 10;
-	int playerKills = 0;
 	int distanciaPlayers;
 	int playerCombustivel = 14;
 	int decrCombustivel = 0;
@@ -406,6 +443,7 @@ int main() {
 	TipoInimigo inimigo02;
 	TipoInimigo inimigo03;
 	TipoInimigo naveSpaw;
+	TipoInimigo restoreGas;
 
 	/*	
 	int X_atual, X_proximo, Y_atual, Y_proximo;
@@ -414,10 +452,15 @@ int main() {
 	*/
 
 	inimigo01 = IniInimigo(inimigo01);
+	inimigo01.eInim = true;
 	inimigo02 = IniInimigo(inimigo02);
+	inimigo02.eInim = true;
 	inimigo03 = IniInimigo(inimigo03);
+	inimigo03.eInim = true;
 	naveSpaw = IniInimigo(naveSpaw);
 	naveSpaw.direcaoTiro = 0;
+	restoreGas = IniInimigo(restoreGas);
+
 	
 
 	bool animar = true;
@@ -592,6 +635,12 @@ int main() {
 									inimigo03.Yatual = randInimigoY();
 									SCORE_SOMAR++;
 								}
+								if ((InimigoAtindo(tiroTopX, tiroTopY, restoreGas) || InimigoAtindo(tiroBotX, tiroBotY, restoreGas)) && restoreGas.vivo) {
+									restoreGas.vivo = false;
+									restoreGas.Xatual = randInimigoX();
+									restoreGas.Yatual = randInimigoY();
+									playerCombustivel = 14;
+								}
 							}
 						}
 
@@ -643,10 +692,16 @@ int main() {
 
 			}
 
+			//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
+
+			restoreGas = RestauraConbustivel(restoreGas, playerCombustivel, animar, fps);
+			
+
+
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
-			if (playerKills < 10) {
 
 				//Verificando se a variavel tem a posição de um inimigo
 				if (fps % 60 == 0) {
@@ -749,7 +804,7 @@ int main() {
 
 				
 				//-----------------------------------------------------------------------------------
-			}
+
 
 
 			//------------------------- ATUALIZANDO O SCORE----------------------
