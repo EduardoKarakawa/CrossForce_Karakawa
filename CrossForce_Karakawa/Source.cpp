@@ -432,7 +432,7 @@ int main() {
 	int playerTopY = 19;
 	int playerBotX = 75;
 	int playerBotY = 79;
-	int playerVidas = 0;
+	int playerVidas = 3;
 	int spriteVidasX = 10;
 	int distanciaPlayers;
 	int playerCombustivel = 14;
