@@ -417,9 +417,9 @@ int main() {
 
 
 	int ESTADO_JOGO = 1;
-	int const ESTADO_JOGO_MENU = 1;
-	int const ESTADO_JOGO_PLAY = 2;
-	int const ESTADO_JOGO_MORREU = 3;
+	int const ESTADO_JOGO_PLAY = 1;
+	int const SAIR = 2;
+
 
 
 
@@ -432,7 +432,7 @@ int main() {
 	int playerTopY = 19;
 	int playerBotX = 75;
 	int playerBotY = 79;
-	int playerVidas = 3;
+	int playerVidas = 0;
 	int spriteVidasX = 10;
 	int distanciaPlayers;
 	int playerCombustivel = 14;
@@ -489,10 +489,7 @@ int main() {
 	for (;;) {
 
 
-		switch (ESTADO_JOGO)
-		{
-		case ESTADO_JOGO_MENU:
-
+		if (ESTADO_JOGO == ESTADO_JOGO_PLAY){
 
 			Console::Clear();
 
@@ -530,12 +527,15 @@ int main() {
 				else if ((tecla.Key == ConsoleKey::Enter) && (playerVidas <= 0)) {
 					main();
 				}
+				else if ((tecla.Key == ConsoleKey::Escape) && (playerVidas <= 0)) {
+					ESTADO_JOGO = SAIR;
+				}
 			}
 
 
 			//+++++++++++++++++++++++++ SCORE ++++++++++++++++++++++++++++++++++++++++++++++
 			SCORE_POSITIONX = (telaX - ((6 + fontEspace) * 5)) / 2;
-			
+
 			ImprimirScore(SCORE[0], SCORE_POSITIONX, 12);
 			SCORE_POSITIONX += 6 + fontEspace;
 
@@ -706,9 +706,9 @@ int main() {
 				}
 
 			}
-			
 
-						
+
+
 
 
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -716,137 +716,137 @@ int main() {
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 				//Verificando se a variavel tem a posição de um inimigo
-				if (fps % 60 == 0) {
-					if ((!inimigo01.vivo) && (naveSpaw.direcaoTiro == 0))
-					{
-						inimigo01.Xproximo = randInimigoX();
-						inimigo01.Yproximo = randInimigoY();
-						naveSpaw.Xproximo = inimigo01.Xatual;
-						naveSpaw.Xatual = 0;
-						naveSpaw.Yatual = inimigo01.Yatual;
-						naveSpaw.direcaoTiro = 1;
-						naveSpaw.vivo = true;
-					}
-					if ((!restoreGas.vivo) && (naveSpaw.direcaoTiro == 0))
-					{
-						if (fps % 20 == 0) {
-							if (playerCombustivel <= 5) {
-								restoreGas.Xproximo = randInimigoX();
-								restoreGas.Yproximo = randInimigoY();
-								naveSpaw.Xproximo = inimigo03.Xatual;
-								naveSpaw.Xatual = 0;
-								naveSpaw.Yatual = inimigo03.Yatual;
-								naveSpaw.direcaoTiro = 4;
-								naveSpaw.vivo = true;
-							}
+			if (fps % 60 == 0) {
+				if ((!inimigo01.vivo) && (naveSpaw.direcaoTiro == 0))
+				{
+					inimigo01.Xproximo = randInimigoX();
+					inimigo01.Yproximo = randInimigoY();
+					naveSpaw.Xproximo = inimigo01.Xatual;
+					naveSpaw.Xatual = 0;
+					naveSpaw.Yatual = inimigo01.Yatual;
+					naveSpaw.direcaoTiro = 1;
+					naveSpaw.vivo = true;
+				}
+				if ((!restoreGas.vivo) && (naveSpaw.direcaoTiro == 0))
+				{
+					if (fps % 20 == 0) {
+						if (playerCombustivel <= 5) {
+							restoreGas.Xproximo = randInimigoX();
+							restoreGas.Yproximo = randInimigoY();
+							naveSpaw.Xproximo = inimigo03.Xatual;
+							naveSpaw.Xatual = 0;
+							naveSpaw.Yatual = inimigo03.Yatual;
+							naveSpaw.direcaoTiro = 4;
+							naveSpaw.vivo = true;
 						}
 					}
-					if ((!inimigo02.vivo) && (naveSpaw.direcaoTiro == 0))
-					{
-						inimigo02.Xproximo = randInimigoX();
-						inimigo02.Yproximo = randInimigoY();
-						naveSpaw.Xproximo = inimigo02.Xatual;
-						naveSpaw.Xatual = 0;
-						naveSpaw.Yatual = inimigo02.Yatual;
-						naveSpaw.direcaoTiro = 2;
-						naveSpaw.vivo = true;
-					}
-					else if ((!inimigo03.vivo) && (naveSpaw.direcaoTiro == 0))
-					{
-						inimigo03.Xproximo = randInimigoX();
-						inimigo03.Yproximo = randInimigoY();
-						naveSpaw.Xproximo = inimigo03.Xatual;
-						naveSpaw.Xatual = 0;
-						naveSpaw.Yatual = inimigo03.Yatual;
-						naveSpaw.direcaoTiro = 3;
-						naveSpaw.vivo = true;
-					}
-					
+				}
+				if ((!inimigo02.vivo) && (naveSpaw.direcaoTiro == 0))
+				{
+					inimigo02.Xproximo = randInimigoX();
+					inimigo02.Yproximo = randInimigoY();
+					naveSpaw.Xproximo = inimigo02.Xatual;
+					naveSpaw.Xatual = 0;
+					naveSpaw.Yatual = inimigo02.Yatual;
+					naveSpaw.direcaoTiro = 2;
+					naveSpaw.vivo = true;
+				}
+				else if ((!inimigo03.vivo) && (naveSpaw.direcaoTiro == 0))
+				{
+					inimigo03.Xproximo = randInimigoX();
+					inimigo03.Yproximo = randInimigoY();
+					naveSpaw.Xproximo = inimigo03.Xatual;
+					naveSpaw.Xatual = 0;
+					naveSpaw.Yatual = inimigo03.Yatual;
+					naveSpaw.direcaoTiro = 3;
+					naveSpaw.vivo = true;
 				}
 
+			}
 
-				if (naveSpaw.vivo) {
-					naveSpaw = ControlNaveSpaw(naveSpaw,animar);
+
+			if (naveSpaw.vivo) {
+				naveSpaw = ControlNaveSpaw(naveSpaw, animar);
+			}
+			//----------------- Movendo inimigo01---------------------------------------------------------------
+			//----------------- Movendo inimigo01---------------------------------------------------------------
+
+			if ((inimigo01.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 1)) {
+				naveSpaw.vivo = false;
+				naveSpaw.direcaoTiro = 0;
+				inimigo01.vivo = true;
+			}
+
+			if (inimigo01.vivo) {
+
+				if ((playerVidas != VerPlayerAtingido(inimigo01, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo01.atirou)) {
+					playerVidas--;
+					inimigo01.atirou = false;
 				}
-				//----------------- Movendo inimigo01---------------------------------------------------------------
-				//----------------- Movendo inimigo01---------------------------------------------------------------
+				inimigo01 = ControlInimigo(inimigo01, animar, fps);
+				inimigo01 = InimigoAtira(inimigo01, fps);
 
-				if ((inimigo01.Xatual <= naveSpaw.Xatual+15) && (naveSpaw.direcaoTiro == 1)) {
-					naveSpaw.vivo = false;
-					naveSpaw.direcaoTiro = 0;
-					inimigo01.vivo = true;
+			}
+
+
+			//----------------- Movendo inimigo02---------------------------------------------------------------
+			//----------------- Movendo inimigo02---------------------------------------------------------------
+
+			if ((inimigo02.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 2)) {
+				naveSpaw.vivo = false;
+				naveSpaw.direcaoTiro = 0;
+				inimigo02.vivo = true;
+			}
+
+			if (inimigo02.vivo) {
+
+				if ((playerVidas != VerPlayerAtingido(inimigo02, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo02.atirou)) {
+					playerVidas--;
+					inimigo02.atirou = false;
 				}
-				
-				if (inimigo01.vivo) {
+				inimigo02 = ControlInimigo(inimigo02, animar, fps);
+				inimigo02 = InimigoAtira(inimigo02, fps);
 
-					if ((playerVidas != VerPlayerAtingido(inimigo01, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo01.atirou)) {
-						playerVidas--;
-						inimigo01.atirou = false;
-					}
-					inimigo01 = ControlInimigo(inimigo01, animar, fps);
-					inimigo01 = InimigoAtira(inimigo01, fps);
+			}
 
+
+			//----------------- Movendo inimigo03---------------------------------------------------------------
+			//----------------- Movendo inimigo03---------------------------------------------------------------
+
+			if ((inimigo03.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 3)) {
+				naveSpaw.vivo = false;
+				naveSpaw.direcaoTiro = 0;
+				inimigo03.vivo = true;
+			}
+
+			if (inimigo03.vivo) {
+
+				if ((playerVidas != VerPlayerAtingido(inimigo03, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo03.atirou)) {
+					playerVidas--;
+					inimigo03.atirou = false;
 				}
+				inimigo03 = ControlInimigo(inimigo03, animar, fps);
+				inimigo03 = InimigoAtira(inimigo03, fps);
+
+			}
 
 
-				//----------------- Movendo inimigo02---------------------------------------------------------------
-				//----------------- Movendo inimigo02---------------------------------------------------------------
-
-				if ((inimigo02.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 2)) {
-					naveSpaw.vivo = false;
-					naveSpaw.direcaoTiro = 0;
-					inimigo02.vivo = true;
-				}
-
-				if (inimigo02.vivo) {
-
-					if ((playerVidas != VerPlayerAtingido(inimigo02, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo02.atirou)) {
-						playerVidas--;
-						inimigo02.atirou = false;
-					}
-					inimigo02 = ControlInimigo(inimigo02, animar, fps);
-					inimigo02 = InimigoAtira(inimigo02, fps);
-
-				}
+			//-----------------------------------------------------------------------------------
 
 
-				//----------------- Movendo inimigo03---------------------------------------------------------------
-				//----------------- Movendo inimigo03---------------------------------------------------------------
+			//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
+			//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
 
-				if ((inimigo03.Xatual <= naveSpaw.Xatual+15) && (naveSpaw.direcaoTiro == 3)) {
-					naveSpaw.vivo = false;
-					naveSpaw.direcaoTiro = 0;
-					inimigo03.vivo = true;
-				}
+			if ((restoreGas.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 4)) {
+				naveSpaw.vivo = false;
+				naveSpaw.direcaoTiro = 0;
+				restoreGas.vivo = true;
+			}
 
-				if (inimigo03.vivo) {
+			if (restoreGas.vivo) {
+				restoreGas = RestauraConbustivel(restoreGas, playerCombustivel, animar, fps);
 
-					if ((playerVidas != VerPlayerAtingido(inimigo03, playerVidas, playerBotX, playerBotY, playerTopY, playerTopX)) && (inimigo03.atirou)) {
-						playerVidas--;
-						inimigo03.atirou = false;
-					}
-					inimigo03 = ControlInimigo(inimigo03, animar, fps);
-					inimigo03 = InimigoAtira(inimigo03, fps);
-
-				}
-
-				
-				//-----------------------------------------------------------------------------------
-
-
-				//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
-				//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
-
-				if ((restoreGas.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 4)) {
-					naveSpaw.vivo = false;
-					naveSpaw.direcaoTiro = 0;
-					restoreGas.vivo = true;
-				}
-
-				if (restoreGas.vivo) {
-					restoreGas = RestauraConbustivel(restoreGas, playerCombustivel, animar, fps);
-
-				}
+			}
 
 
 
@@ -875,10 +875,10 @@ int main() {
 				}
 				SCORE_SOMAR = 0;
 			}
-			
+
 			playerAtirou = false;
-			
-			
+
+
 			//+++++++++++++++++++++++++ LINHA BAIXO HUD ++++++++++++++++++++++++++++++++++++++++++++++
 			ConsoleHelper::ImprimirASCIIExtended(0, 85, ConsoleColor::Black, ConsoleColor::DarkGreen, "ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ");
 
@@ -919,7 +919,7 @@ int main() {
 			}
 
 			for (int i = 1; i <= aquecimentoArma; i++) {
-				ImpBarra(86 + (3*i), 94);
+				ImpBarra(86 + (3 * i), 94);
 			}
 
 
@@ -968,7 +968,8 @@ int main() {
 			if (fps == 0) {
 				fps = 60;
 			}
-
+		}
+		else if (ESTADO_JOGO == SAIR) {
 			break;
 		}
 		Thread::Sleep(33);
