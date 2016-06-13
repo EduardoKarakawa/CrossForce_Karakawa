@@ -369,29 +369,41 @@ TipoInimigo ControlNaveSpaw(TipoInimigo navespawTemp, bool animarTemp) {
 
 
 TipoInimigo RestauraConbustivel(TipoInimigo restoreGasTemp, int playerCombustivelTemp, bool animaTemp, int fpsTemp) {
-	if (fpsTemp % 20 == 0) {
-		if (playerCombustivelTemp <= 5) {
-			restoreGasTemp.vivo = true;
-		}
+	restoreGasTemp = ControlInimigo(restoreGasTemp, animaTemp, fpsTemp);
+	
+	if (animaTemp) {
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 2, restoreGasTemp.Yatual - 1, ConsoleColor::Black, ConsoleColor::Magenta,     "ÜÜÜÜÜÜ");
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 2, restoreGasTemp.Yatual, ConsoleColor::Black, ConsoleColor::Red, " ÛÛÛÛ ");
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 2, restoreGasTemp.Yatual + 1, ConsoleColor::Black, ConsoleColor::Magenta, "ßßßßßß");
+	}
+	else {
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 3, restoreGasTemp.Yatual - 2, ConsoleColor::Black, ConsoleColor::Red,     "   ÜÜ   ");
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 3, restoreGasTemp.Yatual - 1, ConsoleColor::Black, ConsoleColor::Red, "ßÛÜÛÛÜÛß");
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 3, restoreGasTemp.Yatual , ConsoleColor::Black, ConsoleColor::Red, "  ÛÛÛÛ ");
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 3, restoreGasTemp.Yatual + 1, ConsoleColor::Black, ConsoleColor::Red, "ÜÛßÛÛßÛÜ");
+		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual - 3, restoreGasTemp.Yatual + 2, ConsoleColor::Black, ConsoleColor::Red, "   ßß   ");
 	}
 
-	if (restoreGasTemp.vivo){
-		restoreGasTemp = ControlInimigo(restoreGasTemp, animaTemp, fpsTemp);
-		restoreGasTemp.direcaoTiro++;
-
-
-		ConsoleHelper::ImprimirASCIIExtended(restoreGasTemp.Xatual, restoreGasTemp.Yatual, ConsoleColor::Black, ConsoleColor::White, "Û");
-
-
-	} 
-
-	if(restoreGasTemp.direcaoTiro >= 300) {
-		restoreGasTemp.vivo = false;
-	}
 
 	return restoreGasTemp;
 }
 
+
+void GameOver() {
+	ConsoleHelper::ImprimirASCIIExtended(32, 40, ConsoleColor::Black, ConsoleColor::Red, " ÛÛÛÛÛÛ      ÛÛÛ    ÛÛ     ÛÛ ÛÛÛÛÛÛÛÛ     ÛÛÛÛÛÛÛ  ÛÛ     ÛÛ ÛÛÛÛÛÛÛÛ ÛÛÛÛÛÛÛÛ     ÛÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(32, 41, ConsoleColor::Black, ConsoleColor::Red, "ÛÛ    ÛÛ    ÛÛ ÛÛ   ÛÛÛ   ÛÛÛ ÛÛ          ÛÛ     ÛÛ ÛÛ     ÛÛ ÛÛ       ÛÛ     ÛÛ    ÛÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(32, 42, ConsoleColor::Black, ConsoleColor::Red, "ÛÛ         ÛÛ   ÛÛ  ÛÛÛÛ ÛÛÛÛ ÛÛ          ÛÛ     ÛÛ ÛÛ     ÛÛ ÛÛ       ÛÛ     ÛÛ    ÛÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(32, 43, ConsoleColor::Black, ConsoleColor::Red, "ÛÛ   ÛÛÛÛ ÛÛ     ÛÛ ÛÛ ÛÛÛ ÛÛ ÛÛÛÛÛÛ      ÛÛ     ÛÛ ÛÛ     ÛÛ ÛÛÛÛÛÛ   ÛÛÛÛÛÛÛÛ      ÛÛ ");
+	ConsoleHelper::ImprimirASCIIExtended(32, 44, ConsoleColor::Black, ConsoleColor::Red, "ÛÛ    ÛÛ  ÛÛÛÛÛÛÛÛÛ ÛÛ     ÛÛ ÛÛ          ÛÛ     ÛÛ  ÛÛ   ÛÛ  ÛÛ       ÛÛ   ÛÛ          ");
+	ConsoleHelper::ImprimirASCIIExtended(32, 45, ConsoleColor::Black, ConsoleColor::Red, "ÛÛ    ÛÛ  ÛÛ     ÛÛ ÛÛ     ÛÛ ÛÛ          ÛÛ     ÛÛ   ÛÛ ÛÛ   ÛÛ       ÛÛ    ÛÛ     ÛÛÛÛ");
+	ConsoleHelper::ImprimirASCIIExtended(32, 46, ConsoleColor::Black, ConsoleColor::Red, " ÛÛÛÛÛÛ   ÛÛ     ÛÛ ÛÛ     ÛÛ ÛÛÛÛÛÛÛÛ     ÛÛÛÛÛÛÛ     ÛÛÛ    ÛÛÛÛÛÛÛÛ ÛÛ     ÛÛ    ÛÛÛÛ");
+
+	ConsoleHelper::ImprimirASCIIExtended(25, 54, ConsoleColor::Black, ConsoleColor::Red,"Û ÛÛÛÛÛ Û   Û ÛÛÛÛÛ ÛÛÛÛÛ ÛÛÛÛ  Û  ÛÛÛÛ    Û   ÛÛÛÛ    Û      ÛÛÛÛ  ÛÛÛÛÛ Û Û   Û Û ÛÛÛÛÛ Û   Û   ÛÛÛÛ ");
+	ConsoleHelper::ImprimirASCIIExtended(25, 55, ConsoleColor::Black, ConsoleColor::Red,"Û Û     ÛÛ  Û   Û   Û     Û   Û Û  Û   Û  Û Û  Û   Û  Û Û     Û   Û Û     Û ÛÛ  Û Û Û     Û  Û Û  Û   Û");
+	ConsoleHelper::ImprimirASCIIExtended(25, 56, ConsoleColor::Black, ConsoleColor::Red,"  ÛÛÛ   Û Û Û   Û   ÛÛÛ   ÛÛÛÛ     ÛÛÛÛ  Û   Û ÛÛÛÛ  Û   Û    ÛÛÛÛ  ÛÛÛ   Û Û Û Û Û ÛÛÛ   Û Û   Û ÛÛÛÛ ");
+	ConsoleHelper::ImprimirASCIIExtended(25, 57, ConsoleColor::Black, ConsoleColor::Red,"  Û     Û  ÛÛ   Û   Û     Û  Û     Û     ÛÛÛÛÛ Û  Û  ÛÛÛÛÛ    Û  Û  Û     Û Û  ÛÛ Û Û     Û ÛÛÛÛÛ Û  Û ");
+	ConsoleHelper::ImprimirASCIIExtended(25, 58, ConsoleColor::Black, ConsoleColor::Red,"  ÛÛÛÛÛ Û   Û   Û   ÛÛÛÛÛ Û   Û    Û     Û   Û Û   Û Û   Û    Û   Û ÛÛÛÛÛ Û Û   Û Û ÛÛÛÛÛ Û Û   Û Û   Û");
+}
 
 int main() {
 
@@ -514,6 +526,9 @@ int main() {
 							playerAtirou = true;
 						}
 					}
+				}
+				else if ((tecla.Key == ConsoleKey::Enter) && (playerVidas <= 0)) {
+					main();
 				}
 			}
 
@@ -691,12 +706,9 @@ int main() {
 				}
 
 			}
-
-			//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
-			//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
-
-			restoreGas = RestauraConbustivel(restoreGas, playerCombustivel, animar, fps);
 			
+
+						
 
 
 			//+++++++++++++++++++++++++ INIMIGOS ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -715,7 +727,21 @@ int main() {
 						naveSpaw.direcaoTiro = 1;
 						naveSpaw.vivo = true;
 					}
-					else if ((!inimigo02.vivo) && (naveSpaw.direcaoTiro == 0))
+					if ((!restoreGas.vivo) && (naveSpaw.direcaoTiro == 0))
+					{
+						if (fps % 20 == 0) {
+							if (playerCombustivel <= 5) {
+								restoreGas.Xproximo = randInimigoX();
+								restoreGas.Yproximo = randInimigoY();
+								naveSpaw.Xproximo = inimigo03.Xatual;
+								naveSpaw.Xatual = 0;
+								naveSpaw.Yatual = inimigo03.Yatual;
+								naveSpaw.direcaoTiro = 4;
+								naveSpaw.vivo = true;
+							}
+						}
+					}
+					if ((!inimigo02.vivo) && (naveSpaw.direcaoTiro == 0))
 					{
 						inimigo02.Xproximo = randInimigoX();
 						inimigo02.Yproximo = randInimigoY();
@@ -735,7 +761,9 @@ int main() {
 						naveSpaw.direcaoTiro = 3;
 						naveSpaw.vivo = true;
 					}
+					
 				}
+
 
 				if (naveSpaw.vivo) {
 					naveSpaw = ControlNaveSpaw(naveSpaw,animar);
@@ -804,6 +832,21 @@ int main() {
 
 				
 				//-----------------------------------------------------------------------------------
+
+
+				//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
+				//+++++++++++++++++++++++++ CRIA UM RESTAURADOR DE COMBUSTIVEL ++++++++++++++++++++++++++
+
+				if ((restoreGas.Xatual <= naveSpaw.Xatual + 15) && (naveSpaw.direcaoTiro == 4)) {
+					naveSpaw.vivo = false;
+					naveSpaw.direcaoTiro = 0;
+					restoreGas.vivo = true;
+				}
+
+				if (restoreGas.vivo) {
+					restoreGas = RestauraConbustivel(restoreGas, playerCombustivel, animar, fps);
+
+				}
 
 
 
@@ -910,6 +953,13 @@ int main() {
 				else {
 					animar = true;
 				}
+			}
+
+
+			//++++++++++++++++++++++++ EXIBE GAME OVER! +++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//++++++++++++++++++++++++ EXIBE GAME OVER! +++++++++++++++++++++++++++++++++++++++++++++++++++++
+			if (playerVidas <= 0) {
+				GameOver();
 			}
 
 
